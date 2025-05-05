@@ -8,14 +8,24 @@ const routes = [
     component: HomeView
   },
   {
-    path: 'jeu',
-    name: 'Jeu',
-    component: JeuView
+    path: 'game',
+    name: 'Game',
+    component: GameView
   },
   {
-    path: 'evenement',
-    name: 'Evenement',
-    component: EvenementView
+    path: 'event',
+    name: 'Event',
+    component: EventView
+  },
+  {
+    path: 'register',
+    name: 'Register',
+    component: RegisterView
+  },
+  {
+    path: 'myaccount',
+    name: 'Myaccount',
+    component: MyAccountView
   },
 ]
 

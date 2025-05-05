@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
     <HelloWorld msg="Test"/>
   </div>
 </template>
@@ -10,7 +9,7 @@
 import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
-  name: 'EvenementView',
+  name: 'GameView',
   components: {
     HelloWorld
   }
