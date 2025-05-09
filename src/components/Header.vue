@@ -1,29 +1,72 @@
 <template>
   <header class="header">
-    <nav class="navbar">
-      <router-link to="/" class="logo">
-        <img src="../assets/logo.svg" alt="Logo" class="logo-img" />
-        <span class="logo-text">PlayBack</span>
-      </router-link>
-      <ul class="nav-links">
-        <li><router-link to="/" class="onglets">Événements</router-link></li>
-        <li>
+    <div class="pc_header">
+      <nav class="navbar">
+        <router-link to="/" class="logo">
+          <img src="../assets/logo.svg" alt="Logo" class="logo-img" />
+          <span class="logo-text">PlayBack</span>
+        </router-link>
+        <ul class="nav-links">
+          <li><router-link to="/" class="onglets">Événements</router-link></li>
+          <li>
+            <router-link to="/about" class="onglets"
+              >Jeux de société</router-link
+            >
+          </li>
+          <li>
+            <router-link to="/events" class="onglets">Notre café</router-link>
+          </li>
+          <li>
+            <router-link to="/login" class="login-header"
+              >Connexion</router-link
+            >
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <div class="mobile_header">
+      <nav class="navbar mobile_navbar">
+        <router-link to="/" class="logo">
+          <img src="../assets/logo.svg" alt="Logo" class="logo-img" />
+          <span class="logo-text">PlayBack</span>
+        </router-link>
+        <div id="burger" @click="toggleMenu">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+      </nav>
+      <div class="toggle_mobile_header">
+        <div class="line">
+          <router-link to="/" class="onglets">Événements</router-link>
+        </div>
+        <div class="line">
           <router-link to="/about" class="onglets">Jeux de société</router-link>
-        </li>
-        <li>
+        </div>
+        <div class="line">
           <router-link to="/events" class="onglets">Notre café</router-link>
-        </li>
-        <li>
+        </div>
+        <div class="line">
           <router-link to="/login" class="login-header">Connexion</router-link>
-        </li>
-      </ul>
-    </nav>
+        </div>
+      </div>
+    </div>
   </header>
 </template>
 
 <script>
 export default {
   name: "Header",
+  methods: {
+    toggleMenu() {
+      const toggleHeader = document.querySelector(".toggle_mobile_header");
+      toggleHeader.style.display =
+        toggleHeader.style.display === "none" ||
+        toggleHeader.style.display === ""
+          ? "flex"
+          : "none";
+    },
+  },
 };
 </script>
 
@@ -48,7 +91,11 @@ header {
 .nav-links {
   list-style: none;
   display: flex;
+  justify-content: space-around;
+  align-items: center;
   gap: 40px;
+  max-width: 70%;
+  width: fit-content;
 }
 
 .logo {
@@ -91,5 +138,69 @@ ul {
   background-color: #bee3db;
   padding: 10px 20px;
   border-radius: 5px;
+}
+
+.mobile_header {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: end;
+  background-color: #3f424d;
+  padding: 20px 0 0 0;
+  row-gap: 10px;
+}
+
+.mobile_navbar {
+  display: flex;
+  width: 90%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+}
+
+#burger {
+  height: 31px;
+  width: 36px;
+  margin-right: 1em;
+}
+
+#burger div {
+  height: 5px;
+  width: 36px;
+  margin-bottom: 8px;
+  transition: 0.3s;
+  background-color: #bee3db;
+  border-radius: 2.5px;
+}
+
+.toggle_mobile_header {
+  display: none;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #3f424d;
+  padding: 20px 0 0 0;
+}
+
+.line {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #bee3db;
+  width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+  .pc_header {
+    display: none;
+  }
+  .mobile_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 </style>

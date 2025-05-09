@@ -89,12 +89,19 @@
   border-radius: 10px;
   cursor: pointer;
   width: 25%;
+  min-width: 100px;
   font-size: 16px;
 }
 
 .inscription {
   color: #89b0ae;
   text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .auth-panel {
+    width: 80vw;
+  }
 }
 </style>
 

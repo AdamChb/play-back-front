@@ -116,6 +116,12 @@
   color: #89b0ae;
   text-decoration: none;
 }
+
+@media (max-width: 768px) {
+  .auth-panel {
+    width: 80vw;
+  }
+}
 </style>
 
 <script>
