@@ -34,7 +34,7 @@ header {
   padding: 0;
 
   background-color: #3f424d;
-  font-size: 24px;
+  font-size: 18px;
 }
 
 .navbar {
@@ -60,13 +60,13 @@ header {
 }
 
 .logo-img {
-  width: 70px;
-  height: 70px;
+  width: 50px;
+  height: 50px;
   margin-right: 10px;
 }
 
 .logo-text {
-  font-size: 30px;
+  font-size: 24px;
   font-weight: bold;
 }
 
