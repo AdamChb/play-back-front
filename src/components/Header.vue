@@ -9,12 +9,10 @@
         <ul class="nav-links">
           <li><router-link to="/" class="onglets">Événements</router-link></li>
           <li>
-            <router-link to="/about" class="onglets"
-              >Jeux de société</router-link
-            >
+            <router-link to="/" class="onglets">Jeux de société</router-link>
           </li>
           <li>
-            <router-link to="/events" class="onglets">Notre café</router-link>
+            <router-link to="/event" class="onglets">Notre café</router-link>
           </li>
           <li>
             <router-link v-if="!connected" to="/login" class="login-header"
@@ -44,10 +42,10 @@
           <router-link to="/" class="onglets">Événements</router-link>
         </div>
         <div class="line">
-          <router-link to="/about" class="onglets">Jeux de société</router-link>
+          <router-link to="/  " class="onglets">Jeux de société</router-link>
         </div>
         <div class="line">
-          <router-link to="/events" class="onglets">Notre café</router-link>
+          <router-link to="/event" class="onglets">Notre café</router-link>
         </div>
         <div class="line">
           <router-link v-if="!connected" to="/login" class="login-header"
