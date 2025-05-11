@@ -17,8 +17,11 @@
             <router-link to="/events" class="onglets">Notre café</router-link>
           </li>
           <li>
-            <router-link to="/login" class="login-header"
+            <router-link v-if="!connected" to="/login" class="login-header"
               >Connexion</router-link
+            >
+            <router-link v-else to="/myaccount" class="login-header"
+              >Mon compte</router-link
             >
           </li>
         </ul>
@@ -47,7 +50,12 @@
           <router-link to="/events" class="onglets">Notre café</router-link>
         </div>
         <div class="line">
-          <router-link to="/login" class="login-header">Connexion</router-link>
+          <router-link v-if="!connected" to="/login" class="login-header"
+            >Connexion</router-link
+          >
+          <router-link v-else to="/myaccount" class="login-header"
+            >Mon compte</router-link
+          >
         </div>
       </div>
     </div>
@@ -57,6 +65,11 @@
 <script>
 export default {
   name: "Header",
+  data() {
+    return {
+      connected: false,
+    };
+  },
   methods: {
     toggleMenu() {
       const toggleHeader = document.querySelector(".toggle_mobile_header");
