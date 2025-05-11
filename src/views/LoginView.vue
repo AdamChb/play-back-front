@@ -1,7 +1,7 @@
 <template>
   <section class="auth-page">
     <div class="auth-panel">
-      <h2 class="auth-title">Inscription</h2>
+      <h2 class="auth-title">Connexion</h2>
       <form @submit.prevent="submitForm" class="auth-form">
         <label for="username" class="auth-label">Nom d'utilisateur</label>
         <input
@@ -10,17 +10,6 @@
           v-model="username"
           name="username"
           placeholder="Ex : ajdmabuerdcjk"
-          class="auth-input"
-          required
-        />
-
-        <label for="email" class="auth-label">Email</label>
-        <input
-          type="email"
-          id="email"
-          v-model="email"
-          name="email"
-          placeholder="Ex : ajdmab@gmail.com"
           class="auth-input"
           required
         />
@@ -36,24 +25,15 @@
           required
         />
 
-        <label for="confirmPassword" class="auth-label"
-          >Confirmer le mot de passe</label
-        >
-        <input
-          type="password"
-          id="confirmPassword"
-          v-model="confirmPassword"
-          name="confirmPassword"
-          placeholder="•••••••••••••"
-          class="auth-input"
-          required
-        />
-
-        <button type="submit" class="auth-btn">Inscription</button>
+        <button type="submit" class="auth-btn" @click="connexion">
+          Connexion
+        </button>
       </form>
       <p class="auth-foot">
-        Vous avez déjà un compte ?
-        <router-link to="/login" class="connexion">Connexion</router-link>
+        Vous n’avez pas encore de compte ?
+        <router-link to="/register" class="inscription"
+          >Inscription</router-link
+        >
       </p>
     </div>
   </section>
@@ -69,8 +49,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 600px;
-  height: 100vh;
+  min-height: 400px;
+  height: 80vh;
 }
 .auth-panel {
   background-color: rgb(255, 255, 255);
@@ -109,10 +89,11 @@
   border-radius: 10px;
   cursor: pointer;
   width: 25%;
+  min-width: 100px;
   font-size: 16px;
 }
 
-.connexion {
+.inscription {
   color: #89b0ae;
   text-decoration: none;
 }
@@ -128,25 +109,18 @@
 import router from "@/router";
 
 export default {
-  name: "RegisterView",
+  name: "LoginView",
   data() {
     return {
       username: "",
-      email: "",
       password: "",
-      confirmPassword: "",
     };
   },
   methods: {
     submitForm() {
-      // Validate the form
-      if (this.password !== this.confirmPassword) {
-        alert("Les mots de passe ne correspondent pas.");
-        return;
-      }
-      // Simulate a successful registration
-      alert("Inscription réussie !");
-      router.push("/login");
+      // Handle login logic here
+      console.log("Login attempt with", this.username, this.password);
+      router.push("/home");
     },
   },
 };

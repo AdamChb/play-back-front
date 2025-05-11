@@ -10,7 +10,7 @@
 import GameCard from '@/components/GameCard.vue'
 
 export default {
-  name: 'EventView',
+  name: "EventView",
   components: {
     GameCard
   }
