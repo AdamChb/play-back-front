@@ -17,17 +17,17 @@ export default {
 </script>
 
 <style scoped>
-.footer {
+footer {
   width: 100%;
   background-color: #3f424d;
   color: #bee3db;
-  padding: 20px;
+  padding: 20px 0;
   text-align: center;
 }
 
 .logo-img {
-  width: 70px;
-  height: 70px;
+  width: 50px;
+  height: 50px;
 }
 
 .logo {
@@ -41,6 +41,6 @@ export default {
 }
 
 .logo-text {
-  font-size: 28px;
+  font-size: 24px;
 }
 </style>
