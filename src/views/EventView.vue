@@ -1,18 +1,18 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.svg" />
-    <HelloWorld msg="Test" />
+  <div class="event-view">
+    <h1>Test du composant GameCard</h1>
+    <GameCard />
   </div>
 </template>
 
+
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import GameCard from '@/components/GameCard.vue'
 
 export default {
   name: "EventView",
   components: {
-    HelloWorld,
-  },
-};
+    GameCard
+  }
+}
 </script>

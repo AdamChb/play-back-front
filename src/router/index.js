@@ -13,29 +13,29 @@ const routes = [
     component: HomeView,
   },
   {
+    path: '/game',
+    name: 'Game',
+    component: GameView
+  },
+  {
+    path: '/event',
+    name: 'Event',
+    component: EventView
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: RegisterView
+  },
+  {
+    path: '/myaccount',
+    name: 'Myaccount',
+    component: MyAccountView
+  },
+  {
     path: "/login",
     name: "Login",
     component: LoginView,
-  },
-  {
-    path: "/game",
-    name: "Game",
-    component: GameView,
-  },
-  {
-    path: "/event",
-    name: "Event",
-    component: EventView,
-  },
-  {
-    path: "/register",
-    name: "Register",
-    component: RegisterView,
-  },
-  {
-    path: "/myaccount",
-    name: "Myaccount",
-    component: MyAccountView,
   },
 ];
 
