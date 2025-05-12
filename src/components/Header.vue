@@ -7,7 +7,7 @@
           <span class="logo-text">PlayBack</span>
         </router-link>
         <ul class="nav-links">
-          <li><router-link to="/" class="onglets">Événements</router-link></li>
+          <li><router-link to="/events" class="onglets">Événements</router-link></li>
           <li>
             <router-link to="/" class="onglets">Jeux de société</router-link>
           </li>

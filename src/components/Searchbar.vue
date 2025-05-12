@@ -17,7 +17,7 @@
 </template>
 
 <script>
-module.exports = {
+export default {
   data() {
     return {
       placeholder: "Rechercher un événement...",
@@ -37,23 +37,33 @@ module.exports = {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
 }
 
 .searchbar {
   display: flex;
-  margin: 20px 0;
-  justify-content: space-between;
   align-items: center;
   border: solid 2px #bee3db;
   border-radius: 10px;
-  width: 80%;
+  width: 100%;
+  max-width: 600px;
+  background-color: transparent; /* Pas de fond blanc */
 }
 
 .searchbar-input {
+  flex-grow: 1;
   display: flex;
   align-items: center;
-  padding: 10px 10px 10px 20px;
+  padding: 10px 20px;
+}
+
+.searchbar input {
   width: 100%;
+  border: none;
+  background-color: transparent; /* Enlève le fond blanc */
+  color: white;
+  font-size: 1rem;
+  outline: none;
 }
 
 .searchbar-icon {
@@ -64,12 +74,6 @@ module.exports = {
   padding: 10px;
   background-color: #bee3db;
   border-radius: 0 10px 10px 0;
-}
-
-.searchbar input {
-  width: 70%;
-  text-overflow: ellipsis;
-  border: none;
 }
 
 .searchbar img {
