@@ -66,6 +66,11 @@ export default {
   outline: none;
 }
 
+.searchbar input::placeholder {
+  color: white;
+  opacity: 0.8; /* Facultatif : légère transparence pour un effet plus doux */
+}
+
 .searchbar-icon {
   display: flex;
   justify-content: center;
