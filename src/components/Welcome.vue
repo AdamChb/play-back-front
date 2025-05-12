@@ -28,7 +28,7 @@
 }
 
 .overlay{
-    padding: 2em;
+    padding: 2em 0;
     text-align: center;
     border-radius: 0.5em;
 }
