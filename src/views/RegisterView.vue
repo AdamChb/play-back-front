@@ -61,16 +61,12 @@
 
 <style scoped>
 .auth-page {
-  background-image: url(@/assets/background.jpeg);
-  background-size: cover;
-  color: #333;
   margin: 0;
   padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 600px;
-  height: 100vh;
+  min-height: 80vh;
 }
 .auth-panel {
   background-color: rgb(255, 255, 255);

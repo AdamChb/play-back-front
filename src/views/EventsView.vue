@@ -31,14 +31,11 @@
   
   <style scoped>
   .events-view {
+    min-height: 80vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 2rem;
-    background-image: url('@/assets/background.jpeg');
-    background-size: cover;
-    background-position: center;
-    min-height: 80vh;
+    justify-content: center;
   }
   
   .title {
@@ -46,6 +43,7 @@
     font-weight: bold;
     margin-bottom: 2rem;
     color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
   }
   
   .content-wrapper {

@@ -41,8 +41,6 @@
 
 <style scoped>
 .auth-page {
-  background-image: url(@/assets/background.jpeg);
-  background-size: cover;
   color: #333;
   margin: 0;
   padding: 0;
