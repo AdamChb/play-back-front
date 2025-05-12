@@ -9,7 +9,7 @@
         <ul class="nav-links">
           <li><router-link to="/events" class="onglets">Événements</router-link></li>
           <li>
-            <router-link to="/" class="onglets">Jeux de société</router-link>
+            <router-link to="/games" class="onglets">Jeux de société</router-link>
           </li>
           <li>
             <router-link to="/event" class="onglets">Notre café</router-link>

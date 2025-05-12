@@ -6,6 +6,7 @@ import EventView from "../views/EventView.vue";
 import EventsView from "../views/EventsView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import MyAccountView from "../views/MyAccountView.vue";
+import GamesView from "../views/GamesView.vue";
 
 const routes = [
   {
@@ -43,6 +44,11 @@ const routes = [
     name: "Login",
     component: LoginView,
   },
+  {
+    path: "/games",
+    name: "Games",
+    component: GamesView,
+  }
 ];
 
 const router = createRouter({
