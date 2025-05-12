@@ -3,6 +3,7 @@ import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import GameView from "../views/GameView.vue";
 import EventView from "../views/EventView.vue";
+import EventsView from "../views/EventsView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import MyAccountView from "../views/MyAccountView.vue";
 
@@ -13,24 +14,29 @@ const routes = [
     component: HomeView,
   },
   {
-    path: '/game',
-    name: 'Game',
-    component: GameView
+    path: "/game",
+    name: "Game",
+    component: GameView,
   },
   {
-    path: '/event',
-    name: 'Event',
-    component: EventView
+    path: "/event",
+    name: "Event",
+    component: EventView,
   },
   {
-    path: '/register',
-    name: 'Register',
-    component: RegisterView
+    path: "/events",
+    name: "Events",
+    component: EventsView,
   },
   {
-    path: '/myaccount',
-    name: 'Myaccount',
-    component: MyAccountView
+    path: "/register",
+    name: "Register",
+    component: RegisterView,
+  },
+  {
+    path: "/myaccount",
+    name: "Myaccount",
+    component: MyAccountView,
   },
   {
     path: "/login",
