@@ -1,18 +1,3 @@
-Parfait ! Je vais ajuster ton composant `Preview.vue` pour qu’il corresponde au design que tu as montré dans la capture d’écran (type Figma) :
-
-### 🎯 Objectifs selon ton image :
-
-1. **Centrage vertical du contenu** dans la section (titre + bouton + cartes).
-2. **Espacement harmonieux entre les éléments.**
-3. **Header et bouton sur la même ligne**, avec bon alignement.
-4. **Deux cartes bien centrées**, avec un léger fond et ombre.
-5. **Polices cohérentes et tailles ajustées.**
-
----
-
-### ✅ Ton composant `Preview.vue` corrigé et stylisé :
-
-```vue
 <template>
   <section class="preview-view">
     <div class="container">
