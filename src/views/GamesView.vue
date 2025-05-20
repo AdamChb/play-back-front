@@ -32,13 +32,13 @@
   
   <style scoped>
   .games-view {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem;
-    min-height: 80vh;
-    justify-content: center;
-  }
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* centrer verticalement */
+  /* supprime padding: 2rem pour qu'il corresponde à Events */
+}
   
   .title {
     font-size: 2.5rem;

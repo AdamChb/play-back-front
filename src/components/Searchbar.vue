@@ -20,7 +20,7 @@
 export default {
   data() {
     return {
-      placeholder: "Rechercher un événement...",
+      placeholder: "Rechercher...",
       searchQuery: "",
     };
   },
