@@ -7,12 +7,16 @@
           <span class="logo-text">PlayBack</span>
         </router-link>
         <ul class="nav-links">
-          <li><router-link to="/events" class="onglets">Événements</router-link></li>
           <li>
-            <router-link to="/games" class="onglets">Jeux de société</router-link>
+            <router-link to="/events" class="onglets">Événements</router-link>
           </li>
           <li>
-            <router-link to="/event" class="onglets">Notre café</router-link>
+            <router-link to="/games" class="onglets"
+              >Jeux de société</router-link
+            >
+          </li>
+          <li>
+            <router-link to="/cafe" class="onglets">Notre café</router-link>
           </li>
           <li>
             <router-link v-if="!connected" to="/login" class="login-header"
