@@ -8,10 +8,18 @@
         </div>
   
         <div class="card-container">
-          <GameCard />
-          <GameCard />
-          <GameCard />
-          <GameCard />
+          <router-link class="game_link" to="/game">
+            <GameCard />
+          </router-link>
+          <router-link class="game_link" to="/game">
+            <GameCard />
+          </router-link>
+          <router-link class="game_link" to="/game">
+            <GameCard />
+          </router-link>
+          <router-link class="game_link" to="/game">
+            <GameCard />
+          </router-link>
         </div>
       </div>
     </div>
@@ -73,6 +81,11 @@
     gap: 20px;
     flex-wrap: wrap;
     justify-content: center;
+  }
+
+  .game_link{
+    text-decoration: none;
+    color: #000000;
   }
   </style>
   
