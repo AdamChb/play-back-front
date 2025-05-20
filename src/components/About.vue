@@ -1,41 +1,51 @@
 <template>
-    <section class="about-view">
-        <div class="content">
-            <div class="text">
-                <h1>Découvrez notre café !</h1>
-                <p class="infos">Bienvenue au café ludique <strong>PlayBack</strong> !</p>
-                <p class="infos">Un lieu chaleureux et convivial où passionnés de jeux de société et curieux se retrouvent autour d’un bon café.</p>
-                <p class="infos">Que ce soit pour découvrir de nouveaux jeux, participer à des soirées thématiques ou simplement partager un moment entre amis, notre café est l’endroit idéal pour allier détente, stratégie et rires.</p>
-            </div>
-            <div class="image">
-                <img src="@/assets/cafe.png" alt="Café ludique" />
-            </div>
-        </div>
-    </section>
+  <section class="about-view">
+    <div class="content">
+      <div class="text">
+        <h1>Découvrez notre café !</h1>
+        <p class="infos">
+          Bienvenue au café ludique <strong>PlayBack</strong> !
+        </p>
+        <p class="infos">
+          Un lieu chaleureux et convivial où passionnés de jeux de société et
+          curieux se retrouvent autour d’un bon café.
+        </p>
+        <p class="infos">
+          Que ce soit pour découvrir de nouveaux jeux, participer à des soirées
+          thématiques ou simplement partager un moment entre amis, notre café
+          est l’endroit idéal pour allier détente, stratégie et rires.
+        </p>
+      </div>
+      <div class="image">
+        <img src="@/assets/cafe.png" alt="Café ludique" />
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
 export default {
-  name: "Cafe"
+  name: "Cafe",
 };
 </script>
 
 <style scoped>
 .about-view {
-  padding: 3em 1.5em;
+  padding: 3em 0;
+  width: 100%;
   background-color: white;
   min-height: 80vh;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: center;
 }
 
 .content {
   display: flex;
+  width: 75%;
   align-items: center;
   justify-content: space-around;
-  flex-wrap: wrap; 
-  max-width: 1200px;
+  flex-wrap: wrap;
 }
 
 .text {
@@ -49,7 +59,7 @@ export default {
 
 .text h1 {
   font-size: 2em;
-  color: #3F424D;
+  color: #3f424d;
   margin-bottom: 1em;
 }
 
@@ -75,7 +85,7 @@ export default {
     margin-bottom: 2em;
   }
 
-  .image{
+  .image {
     text-align: center;
   }
 

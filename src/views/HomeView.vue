@@ -10,7 +10,6 @@
 import Welcome from "@/components/Welcome.vue";
 import About from "@/components/About.vue";
 import Preview from "@/components/Preview.vue";
-import Searchbar from "@/components/Searchbar.vue";
 
 export default {
   name: "HomeView",
