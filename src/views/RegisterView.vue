@@ -135,14 +135,29 @@ export default {
   },
   methods: {
     submitForm() {
-      // Validate the form
-      if (this.password !== this.confirmPassword) {
-        alert("Les mots de passe ne correspondent pas.");
-        return;
-      }
-      // Simulate a successful registration
-      alert("Inscription réussie !");
-      router.push("/login");
+      // Handle login logic here
+      fetch("http://play-back.api.arcktis.fr/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          pseudo: this.username,
+          email: this.email,
+          password: this.password,
+        }),
+      })
+        .then((response) => {
+          if (response.ok) {
+            // Redirect to the login page after successful registration
+            router.push("/login");
+          } else {
+            alert("Erreur lors de l'inscription");
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     },
   },
 };
