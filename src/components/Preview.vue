@@ -12,6 +12,7 @@
         <EventCard
           v-for="event in events"
           :key="event.id"
+          :id="event.id"
           :date="event.date"
           :title="event.title"
           :time="event.time"
@@ -24,42 +25,45 @@
 </template>
 
 <script>
-import EventCard from './EventCard.vue';
+import EventCard from "./EventCard.vue";
 export default {
+  name: "Preview",
   components: { EventCard },
   data() {
     return {
       events: [
         {
           id: 1,
-          date: '27',
-          title: 'Session jeux de plateau',
-          time: '19h - 23h',
+          date: "27",
+          month: "June",
+          title: "Session jeux de plateau",
+          time: "19h - 23h",
           players: 40,
-          games: ['Carcassone', 'Risk', 'Catan', 'Mysterium']
+          games: ["Carcassone", "Risk", "Catan", "Mysterium"],
         },
         {
           id: 2,
-          date: '28',
-          title: 'Tournoi',
-          time: '19h - 23h',
+          date: "28",
+          month: "June",
+          title: "Tournoi",
+          time: "19h - 23h",
           players: 12,
-          games: ['Dixit', 'Monopoly']
-        }
-      ]
+          games: ["Dixit", "Monopoly"],
+        },
+      ],
     };
-  }
+  },
 };
 </script>
 
 <style scoped>
 .preview-view {
-    background-color: #BEE3DB;
-    padding: 2em 1.5em;
-    min-height: 80vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  background-color: #bee3db;
+  padding: 2em 1.5em;
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .container {
@@ -68,39 +72,39 @@ export default {
 }
 
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2em;
-    flex-wrap: wrap;
-    gap: 1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2em;
+  flex-wrap: wrap;
+  gap: 1em;
 }
 
 h1 {
-    font-size: 3em;
-    color: #3F424D;
+  font-size: 3em;
+  color: #3f424d;
 }
 
 .events-btn {
-    text-decoration: none;
-    align-self: flex-start;
-    border: 3px solid #3F424D;
-    padding: 0.3em 0.6em;
-    text-align: center;
-    border-radius: 0.4em;
-    color: #3F424D;
-    backdrop-filter: blur(3px);
-    background-color: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(3px);
-    transition: 0.3s;
-    animation: fadeInLeft ease 1.5s;
-    font-size: 1.5em;
+  text-decoration: none;
+  align-self: flex-start;
+  border: 3px solid #3f424d;
+  padding: 0.3em 0.6em;
+  text-align: center;
+  border-radius: 0.4em;
+  color: #3f424d;
+  backdrop-filter: blur(3px);
+  background-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(3px);
+  transition: 0.3s;
+  animation: fadeInLeft ease 1.5s;
+  font-size: 1.5em;
 }
 
 .events {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2em;
-    justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2em;
+  justify-content: center;
 }
 </style>
