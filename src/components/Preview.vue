@@ -9,7 +9,17 @@
       </div>
 
       <div class="events">
-        <EventCard v-for="event in events" :size="size" />
+        <EventCard
+          v-for="event in events"
+          :key="event.id"
+          :id="event.id"
+          :date="event.date"
+          :title="event.title"
+          :time="event.time"
+          :players="event.players"
+          :games="event.games"
+          :size="size"
+        />
       </div>
     </div>
   </section>
@@ -18,6 +28,7 @@
 <script>
 import EventCard from "./EventCard.vue";
 export default {
+  name: "Preview",
   components: { EventCard },
   data() {
     return {
@@ -26,6 +37,7 @@ export default {
         {
           id: 1,
           date: "27",
+          month: "June",
           title: "Session jeux de plateau",
           time: "19h - 23h",
           players: 40,
@@ -34,6 +46,7 @@ export default {
         {
           id: 2,
           date: "28",
+          month: "June",
           title: "Tournoi",
           time: "19h - 23h",
           players: 12,

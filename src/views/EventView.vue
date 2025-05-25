@@ -4,7 +4,11 @@
       <div class="event-header">
         <div class="calendar-block">
           <div class="calendar">
-            <img src="@/assets/calendrier.svg" alt="Calendrier" class="calendar-asset" />
+            <img
+              src="@/assets/calendrier.svg"
+              alt="Calendrier"
+              class="calendar-asset"
+            />
             <div class="calendar-text">
               <div class="month">June</div>
               <div class="day">27</div>
@@ -18,7 +22,11 @@
             <h2 class="event-title">Session jeux de plateau</h2>
             <div class="action-right">
               <div class="event-participants">
-                <img src="@/assets/utilisateur.svg" alt="Utilisateurs" class="user-icon" />
+                <img
+                  src="@/assets/utilisateur.svg"
+                  alt="Utilisateurs"
+                  class="user-icon"
+                />
                 <span>24/40</span>
               </div>
               <button class="register-btn">S’inscrire</button>
@@ -29,29 +37,65 @@
       </div>
 
       <p class="event-description">
-        Rejoins-nous pour une soirée conviviale autour des jeux de plateau ! Que tu sois stratège confirmé ou simple curieux, viens partager un bon moment, relever des défis, et découvrir de nouveaux jeux dans une ambiance détendue et chaleureuse.
+        Rejoins-nous pour une soirée conviviale autour des jeux de plateau ! Que
+        tu sois stratège confirmé ou simple curieux, viens partager un bon
+        moment, relever des défis, et découvrir de nouveaux jeux dans une
+        ambiance détendue et chaleureuse.
       </p>
 
       <h3 class="games-title">Jeux proposés</h3>
       <div class="games-container">
-        <GameCard />
-        <GameCard />
-        <GameCard />
-        <GameCard />
+        <GameCard
+          v-for="game in games"
+          :key="game.id"
+          :id="game.id"
+          :title="game.title"
+          :image="game.image"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import GameCard from '@/components/GameCard.vue'
+import GameCard from "@/components/GameCard.vue";
 
 export default {
   name: "EventView",
   components: {
-    GameCard
-  }
-}
+    GameCard,
+  },
+  data() {
+    return {
+      games: [
+        {
+          id: 1,
+          title: "Carcassonne",
+          image:
+            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
+        },
+        {
+          id: 2,
+          title: "Catan",
+          image:
+            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
+        },
+        {
+          id: 3,
+          title: "Dixit",
+          image:
+            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
+        },
+        {
+          id: 4,
+          title: "Monopoly",
+          image:
+            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
+        },
+      ],
+    };
+  },
+};
 </script>
 
 <style scoped>
@@ -103,7 +147,7 @@ export default {
   left: 0;
   right: 0;
   text-align: center;
-  color: #3F424D;
+  color: #3f424d;
   font-weight: bold;
 }
 
@@ -118,7 +162,7 @@ export default {
 
 .time {
   font-size: 10px;
-  color: #3F424D;
+  color: #3f424d;
   margin-top: 5px;
   text-align: center;
 }
@@ -160,11 +204,11 @@ export default {
 }
 
 .register-btn {
-  border: 2px solid #3F424D;
+  border: 2px solid #3f424d;
   padding: 0.5em 1em;
   text-align: center;
   border-radius: 0.4em;
-  color: #3F424D;
+  color: #3f424d;
   background-color: rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(3px);
   transition: 0.3s;
