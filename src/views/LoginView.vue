@@ -117,8 +117,31 @@ export default {
   methods: {
     submitForm() {
       // Handle login logic here
-      console.log("Login attempt with", this.username, this.password);
-      router.push("/home");
+      fetch("localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: this.email,
+          password: this.password,
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Login failed");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          // Store the token in local storage
+          localStorage.setItem("token", data.token);
+          console.log("Login successful", data);
+          router.push("/home");
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     },
   },
 };
