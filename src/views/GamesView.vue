@@ -32,53 +32,49 @@ export default {
   },
   data() {
     return {
-      games: [
-        {
-          id: 1,
-          title: "Carcassonne",
-          image:
-            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
-        },
-        {
-          id: 2,
-          title: "Catan",
-          image:
-            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
-        },
-        {
-          id: 3,
-          title: "Dixit",
-          image:
-            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
-        },
-        {
-          id: 4,
-          title: "Monopoly",
-          image:
-            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
-        },
-      ],
+      games: [],
     };
   },
   methods: {
-    search(query) {
-      fetch("https://play-back.api.arcktis.fr/api/games/search?name=" + query, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          this.games = data; // Mettre à jour la liste des jeux avec les résultats de la recherche
-        })
-        .catch((error) => {
-          console.error("Erreur lors de la recherche de jeux:", error);
-        });
+    async fetchGames() {
+      try {
+        const res = await fetch("https://play-back.api.arcktis.fr/api/games/all");
+        const data = await res.json();
+
+        // Remap les propriétés
+        this.games = data.map(game => ({
+          id: Number(game.ID_jeu),
+          title: game.nom,
+          image:
+            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png" // image générique
+        }));
+      } catch (error) {
+        console.error("Erreur lors du chargement des jeux :", error);
+      }
     },
+    async search(query) {
+      try {
+        const res = await fetch("https://play-back.api.arcktis.fr/api/games/search?name=" + query);
+        const data = await res.json();
+
+        this.games = data.map(game => ({
+          id: Number(game.ID_jeu),
+          title: game.nom,
+          image:
+            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png"
+        }));
+      } catch (error) {
+        console.error("Erreur lors de la recherche de jeux :", error);
+      }
+    }
   },
+  mounted() {
+    this.fetchGames();
+  }
 };
 </script>
+
+
 
 <style scoped>
 .games-view {
