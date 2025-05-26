@@ -43,13 +43,13 @@
       </nav>
       <div class="toggle_mobile_header">
         <div class="line">
-          <router-link to="/" class="onglets">Événements</router-link>
+          <router-link to="/events" class="onglets">Événements</router-link>
         </div>
         <div class="line">
-          <router-link to="/  " class="onglets">Jeux de société</router-link>
+          <router-link to="/games" class="onglets">Jeux de société</router-link>
         </div>
         <div class="line">
-          <router-link to="/event" class="onglets">Notre café</router-link>
+          <router-link to="/cafe" class="onglets">Notre café</router-link>
         </div>
         <div class="line">
           <router-link v-if="!connected" to="/login" class="login-header"
