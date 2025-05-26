@@ -73,7 +73,7 @@
     <div class="game-section">
       <h3 class="section-title">
         Mes jeux à tester
-        <img src="@/assets/empty_star.svg" class="icon" />
+        <img src="@/assets/empty_etoile.svg" class="icon" />
         <span class="count">{{ gamesToTest.length }}</span>
       </h3>
       <div class="card-scroll-wrapper">
