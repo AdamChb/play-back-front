@@ -1,376 +1,155 @@
-<script>
-export default {
-  name: "GameCard",
-  props: {
-    game: Object,
-    isLoggedIn: Boolean,
-  },
-  data() {
-    return {
-      game: {
-        Id_jeu: 0,
-        nom: "",
-        description: "",
-        annee_creation: 0,
-        min_joueur: 0,
-        max_joueur: 0,
-        min_age: 0,
-        rang: 0,
-        note: 0,
-        image: "",
-      },
-      isAdmin: false,
-      hasLiked: false,
-      hasFavorited: false
-    };
-  },
-  methods: {
-    toggleLike() {
-      this.hasLiked = !this.hasLiked
-    },
-    toggleFavori() {
-      this.hasFavorited = !this.hasFavorited
-    }
-  }
-}
-  /*
-  COPIER COLLER DE HYBREAD
-
-  async beforeMount() {
-    const token = localStorage.getItem("token");
-    let user;
-    if (token) {
-      user = JSON.parse(atob(token.split(".")[1]));
-    } else {
-      user = { id: 0};
-    }
-
-    this.isAdmin = user.admin;
-
-    const ID_Book = this.$route.query.id;
-
-    const response = await fetch(`http://localhost:3000/api/books/book/${user.id}/${ID_Book}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const data = await response.json();
-    this.book = data[0];
-    console.log(this.book)
-  },
-  methods: {
-    async deleteBook() {
-      const ID_Book = this.$route.query.id;
-
-      const response = await fetch(`http://localhost:3000/api/admin/deletebook/${ID_Book}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-      });
-
-      if (response.ok) {
-        this.$router.push("/homepageloggedin");
-      }
-    },
-    async changeBook() {
-      const ID_Book = this.$route.query.id;
-      
-      const response = await fetch(`http://localhost:3000/api/admin/modifybook/${ID_Book}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-        body: JSON.stringify({
-          ID_Book: this.book.ID_Book,
-          Name_Book: document.querySelector("input[id=Name_Book]").value,
-          Author: document.querySelector("input[id=Author]").value,
-          ID_Category: document.querySelector("select[id=genre]").value,
-          Stock: Number(document.querySelector("input[id=Stock]").value),
-          ISBN: document.querySelector("input[id=ISBN]").value,
-          Summary: document.querySelector("textarea[id=Summary]").value,
-        }),
-      });
-
-      if (response.ok) {
-        this.$router.push("/homepageloggedin");
-      }
-    },
-
-    async toLike() {
-      if (!this.isLoggedIn) {
-        alert("You need to be logged in to like a recipe!");
-        return;
-      }
-
-      this.book.Has_Liked = !this.book.Has_Liked;
-      this.book.Total_Likes += 1;
-      
-      const response = await fetch("http://localhost:3000/api/auth/likebook", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-        body: JSON.stringify({
-          bookId: this.book.Id_Book,
-        }),
-      });
-
-      if (!response.ok) {
-        this.book.Has_Liked = !this.book.Has_Liked;
-        this.book.Total_Likes -= 1;
-      }
-    },
-    async unLike() {
-      if (!this.isLoggedIn) {
-        alert("You need to be logged in to like a recipe!");
-        return;
-      }
-
-      this.book.Has_Liked = !this.book.Has_Liked;
-      this.book.Total_Likes -= 1;
-
-      const response = await fetch("http://localhost:3000/api/auth/unlikeBook", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-        body: JSON.stringify({
-          bookId: this.book.Id_Book,
-        }),
-      });
-
-      if (!response.ok) {
-        this.book.Has_Liked = !this.book.Has_Liked;
-        this.book.Total_Likes += 1;
-      }
-    },
-  },
-};*/
-</script>
-
 <template>
-  <div class="background">
-    <div id="game-view">
-      <div class="bb-container">
-        <div class="buttons">
-          <!-- Button to bring the user to the last page -->
-          <router-link to="/games" style="text-decoration: none">
-            <div class="cta-button">
-              <img src="@/assets/back-arrow.svg" alt="arrow icon" />
-              Return
-            </div>
-          </router-link>
-
-          <div class="admin-button" v-if="isAdmin">
-            <button class="cta-button" @click="">Supprimer un jeu</button>
-            <button class="cta-button" @click="">Modifier un jeu</button>
-          </div>
+  <div class="game-view">
+    <div class="game-card-wrapper">
+      <div class="game-content">
+        <div class="game-img">
+          <img src="@/assets/jeu_ex.png" alt="Image du jeu" />
         </div>
-
-        <!-- Div contenant les infos pour un jeu -->
-        <div class="jeu-container">
-          <!-- Image jeu-->
-          <div class="image_container">
-            <img src="@/assets/jeu_ex.png" alt="Image du jeu" />
-            //<img :src="game.image" alt="Image du jeu" class="game-image" />
-          </div>
-
-          <div class="game-info">
-            <div class="game-header">
-              <div v-if="!isAdmin" class="game-title">{{ game.title }}</div>
-              <input v-else class="game-title-input" :value="game.title" @input="e => game.title = e.target.value" />
-
-              <div class="icons">
-                <img :src="hasLiked ? '/assets/coeur.svg' : '/assets/empty_coeur.svg'" class="icon" @click="toggleLike" alt="like" />
-                <img :src="hasFavorited ? '/assets/etoile.svg' : '/assets/empty_etoile.svg'" class="icon" @click="toggleFavori" alt="favori" />
+        <div class="game-details">
+          <div class="game-title-row">
+            <h2 class="game-title">Risk</h2>
+            <div class="action-right">
+              <div class="assets">
+                <img src="@/assets/empty_etoile.svg" alt="Star" class="heart-icon" />
+                <img src="@/assets/empty_coeur.svg" alt="Like" class="heart-icon" />
               </div>
             </div>
-
-            <div class="game-stats">
-              <div>Note moyenne : {{ game.note || '–' }}</div>
-              <div>Classement : {{ game.ranking || '–' }}</div>
-            </div>
-
-            <div v-if="!isAdmin" class="game-description">{{ game.description }}</div>
-            <textarea
-              v-else
-              class="game-description-input"
-              :value="game.description"
-              @input="e => game.description = e.target.value"
-            ></textarea>
           </div>
+          <p class="genre text-shadow">Genre : Plateau, construction</p>
+          <p class="infos text-shadow">3-7 joueurs</p>
+          <p class="infos text-shadow">Année de publication : 2010</p>
+          <p class="infos text-shadow">Classement du jeu : ?</p>
+          <p class="infos text-shadow">Note moyenne du jeu : ?</p>
+          <p class="infos text-shadow">Age minimum : 10</p>
         </div>
-      </div>>
+      </div>
+
+      <p class="game-description text-shadow">
+        Dans Risk, chaque joueur incarne un général en quête de domination mondiale. Armées en main, ils s’affrontent pour conquérir des territoires sur une carte du monde, en utilisant stratégie, alliances temporaires et jets de dés.
+        Le but ? Éliminer ses adversaires et contrôler tous les continents. À chaque tour, les joueurs renforcent leurs positions, lancent des offensives et déplacent leurs troupes. Mais attention : une attaque mal calculée peut tout faire basculer.
+      </p>
     </div>
   </div>
 </template>
 
-<!-- Style of the page -->
+<script>
+export default {
+  name: "GameView"
+}
+</script>
+
 <style scoped>
-.bb-container {
+.game-view {
+  min-height: 100vh;
   display: flex;
-  flex-direction: column;
   justify-content: center;
+  align-items: center;
+}
+
+.game-card-wrapper {
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 1000px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.game-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
   align-items: flex-start;
 }
 
-.buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+.game-img {
+  flex: 1 1 250px;
+  max-width: 300px;
+}
+
+.game-img img {
   width: 100%;
+  height: auto;
+  border-radius: 12px;
 }
 
-.cta-button {
-  box-sizing: border-box;
-  border: 2px solid white;
+.game-details {
+  flex: 2 1 300px;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.4em 1em 0.4em 0.7em;
-  text-align: center;
-  border-radius: 0.4em;
-  color: white;
-  backdrop-filter: blur(3px);
-  background-color: rgba(255, 255, 255, 0.3);
-  transition: 0.3s;
-  margin-bottom: 1em;
-  animation: fadeInLeft ease 1s;
-}
-.cta-button:hover {
-  transform: scale(1.04);
-  transition: 0.3s;
+  flex-direction: column;
 }
 
-.cta-button img {
-  width: 20px;
-  margin-right: 10px;
-}
-
-.admin-button {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  gap: 1em;
-}
-
-button.cta-button {
-  cursor: pointer;
-  font-size: 1em;
-}
-
-.background {
-  background-position: center;
-  margin: 0;
-  min-height: 80vh;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.jeu_container{
-  border: 1px solid #ccc;
-  border-radius: 16px;
-  overflow: hidden;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  color: #3F424D;
-  max-width: 400px;
-}
-
-.image-container {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  background-color: #f5f5f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.game-image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
-
-.game-info {
-  padding: 16px;
-}
-
-.game-header {
+.game-title-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  gap: 1rem;
 }
 
 .game-title {
-  font-size: 1.2em;
+  margin: 0;
+  font-size: 28px;
   font-weight: bold;
 }
 
-.game-title-input {
-  font-size: 1.2em;
-  font-weight: bold;
-  width: 70%;
-  color: #3F424D;
-}
-
-.icons {
+.action-right {
   display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.assets {
+  display: flex;
+  align-items: center;
   gap: 8px;
 }
 
-.icon {
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
+.heart-icon {
+  width: 40px;
+  height: 40px;
 }
 
-.game-stats {
-  margin-bottom: 12px;
+.genre,
+.infos,
+.game-description,
+.game-title {
+  color: #333;
+}
+
+.genre {
+  font-size: 19px;
+  margin: 4px 0 2px 0;
+}
+
+.infos {
+  font-size: 14px;
+  margin: 4px 0 2px 0;
 }
 
 .game-description {
-  white-space: pre-wrap;
+  font-size: 16px;
+  text-align: justify;
+  margin-top: 0;
 }
 
-.game-description-input {
-  width: 100%;
-  min-height: 100px;
-  color: #3F424D;
+.text-shadow {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* Responsive */
+/* Responsive : image au-dessus du texte si petit écran */
 @media (max-width: 768px) {
-  .book-container {
+  .game-content {
     flex-direction: column;
     align-items: center;
-    text-align: center;
   }
 
-  .book-image img {
-    width: 150px;
+  .game-details {
+    align-items: center;
   }
 
-  .book-info {
-    margin-left: 0;
-    margin-top: 20px;
-  }
-  #book-view{
-    padding-top: 8em;
-    display: block;
-  }
-  .background {
-    height: auto;
+  .game-title-row {
+    flex-direction: column;
   }
 }
-
-
 </style>
