@@ -133,7 +133,6 @@ export default {
         }
       )
         .then((response) => {
-          console.log("Response:", response);
           if (!response.ok) {
             throw new Error("Failed to fetch users");
           }
@@ -141,7 +140,6 @@ export default {
         })
         .then((data) => {
           this.users = [];
-          console.log("Fetched users:", data);
           data.forEach((user) => {
             this.users.push({
               id: user.ID_utilisateur,
@@ -165,13 +163,11 @@ export default {
     },
     editUser(userid) {
       // Logic to edit the selected user
-      console.log("Editing user:", userid);
       this.actualUser = this.users.find((user) => user.id === userid);
     },
     deleteUser(userId) {
       if (confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")) {
-        console.log("Deleting user:", userId);
-        fetch("https://play-back.api.arcktis.fr/api/auth/delete", {
+        fetch("https://play-back.api.arcktis.fr/api/auth/delete/" + userId, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -275,14 +271,12 @@ export default {
         },
       })
         .then((response) => {
-          console.log("Response:", response);
           if (!response.ok) {
             throw new Error("Failed to fetch users");
           }
           return response.json();
         })
         .then((data) => {
-          console.log("Fetched users:", data);
           this.users = [];
           data.forEach((user) => {
             this.users.push({

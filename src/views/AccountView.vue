@@ -19,13 +19,19 @@
 
     <!-- Mes évènements -->
     <div class="event-section">
-      <h3 class="section-title">Mes évènements <span class="count">{{ upcomingEvents.length }}</span></h3>
+      <h3 class="section-title">
+        Mes évènements <span class="count">{{ upcomingEvents.length }}</span>
+      </h3>
       <div class="card-scroll-wrapper">
         <div class="scroll-arrow left" @click="scrollLeft('eventsRow')">
           <span>&#8249;</span>
         </div>
         <div class="card-row" ref="eventsRow">
-          <EventCard v-for="event in upcomingEvents" :key="event.id" class="event-card" />
+          <EventCard
+            v-for="event in upcomingEvents"
+            :key="event.id"
+            class="event-card"
+          />
         </div>
         <div class="scroll-arrow right" @click="scrollRight('eventsRow')">
           <span>&#8250;</span>
@@ -35,13 +41,20 @@
 
     <!-- Mes anciens évènements -->
     <div class="event-section">
-      <h3 class="section-title">Mes anciens évènements <span class="count">{{ pastEvents.length }}</span></h3>
+      <h3 class="section-title">
+        Mes anciens évènements
+        <span class="count">{{ pastEvents.length }}</span>
+      </h3>
       <div class="card-scroll-wrapper">
         <div class="scroll-arrow left" @click="scrollLeft('oldEventsRow')">
           <span>&#8249;</span>
         </div>
         <div class="card-row" ref="oldEventsRow">
-          <EventCard v-for="event in pastEvents" :key="event.id" class="event-card" />
+          <EventCard
+            v-for="event in pastEvents"
+            :key="event.id"
+            class="event-card"
+          />
         </div>
         <div class="scroll-arrow right" @click="scrollRight('oldEventsRow')">
           <span>&#8250;</span>
@@ -61,7 +74,12 @@
           <span>&#8249;</span>
         </div>
         <div class="card-row" ref="favoritesRow">
-          <GameCard v-for="game in favoriteGames" :key="game.id" :title="game.title" class="game-card" />
+          <GameCard
+            v-for="game in favoriteGames"
+            :key="game.id"
+            :title="game.title"
+            class="game-card"
+          />
         </div>
         <div class="scroll-arrow right" @click="scrollRight('favoritesRow')">
           <span>&#8250;</span>
@@ -81,7 +99,12 @@
           <span>&#8249;</span>
         </div>
         <div class="card-row" ref="toTestRow">
-          <GameCard v-for="game in gamesToTest" :key="game.id" :title="game.title" class="game-card" />
+          <GameCard
+            v-for="game in gamesToTest"
+            :key="game.id"
+            :title="game.title"
+            class="game-card"
+          />
         </div>
         <div class="scroll-arrow right" @click="scrollRight('toTestRow')">
           <span>&#8250;</span>
@@ -101,7 +124,12 @@
           <span>&#8249;</span>
         </div>
         <div class="card-row" ref="testedRow">
-          <GameCard v-for="game in testedGames" :key="game.id" :title="game.title" class="game-card" />
+          <GameCard
+            v-for="game in testedGames"
+            :key="game.id"
+            :title="game.title"
+            class="game-card"
+          />
         </div>
         <div class="scroll-arrow right" @click="scrollRight('testedRow')">
           <span>&#8250;</span>
@@ -112,58 +140,53 @@
 </template>
 
 <script>
-import EventCard from '@/components/EventCard.vue';
-import GameCard from '@/components/GameCard.vue';
+import EventCard from "@/components/EventCard.vue";
+import GameCard from "@/components/GameCard.vue";
 
 export default {
-  name: 'AccountView',
+  name: "AccountView",
   components: {
     EventCard,
-    GameCard
+    GameCard,
   },
   data() {
     return {
-      upcomingEvents: [
-        { id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }
-      ],
-      pastEvents: [
-        { id: 5 }, { id: 6 }, { id: 7 }
-      ],
+      upcomingEvents: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
+      pastEvents: [{ id: 5 }, { id: 6 }, { id: 7 }],
       favoriteGames: [
-        { id: 1, title: 'Catan' },
-        { id: 2, title: '7 Wonders' },
-        { id: 3, title: 'Azul' }
+        { id: 1, title: "Catan" },
+        { id: 2, title: "7 Wonders" },
+        { id: 3, title: "Azul" },
       ],
       gamesToTest: [
-        { id: 4, title: 'Splendor' },
-        { id: 5, title: 'Takenoko' }
+        { id: 4, title: "Splendor" },
+        { id: 5, title: "Takenoko" },
       ],
       testedGames: [
-        { id: 6, title: 'Monopoly' },
-        { id: 7, title: 'Dixit' },
-        { id: 8, title: 'Carcassonne' }
-      ]
+        { id: 6, title: "Monopoly" },
+        { id: 7, title: "Dixit" },
+        { id: 8, title: "Carcassonne" },
+      ],
     };
   },
   methods: {
     scrollRight(refName) {
       const container = this.$refs[refName];
-      const card = container?.querySelector('.event-card, .game-card');
+      const card = container?.querySelector(".event-card, .game-card");
       const scrollAmount = card ? card.offsetWidth + 24 : 250;
-      container?.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      container?.scrollBy({ left: scrollAmount, behavior: "smooth" });
     },
     scrollLeft(refName) {
       const container = this.$refs[refName];
-      const card = container?.querySelector('.event-card, .game-card');
+      const card = container?.querySelector(".event-card, .game-card");
       const scrollAmount = card ? card.offsetWidth + 24 : 250;
-      container?.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      container?.scrollBy({ left: -scrollAmount, behavior: "smooth" });
     },
     logout() {
       localStorage.removeItem("token");
       this.$router.push("/login");
-    }
-
-  }
+    },
+  },
 };
 </script>
 
@@ -182,12 +205,12 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #3F424D;
+  color: #3f424d;
 }
 
 .count {
   background-color: #e0f0ff;
-  color: #3F424D;
+  color: #3f424d;
   border-radius: 10px;
   padding: 0.2rem 0.6rem;
   font-size: 0.9rem;
@@ -280,7 +303,7 @@ export default {
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
-  color: #3F424D;
+  color: #3f424d;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 2;
@@ -293,7 +316,6 @@ export default {
 .logout-btn:hover {
   background-color: #d32f2f;
 }
-
 
 .scroll-arrow:hover {
   background-color: #e6e6e6;

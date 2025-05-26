@@ -22,7 +22,7 @@ export default {
   background-image: url(@/assets/background.jpeg);
   background-size: cover;
   background-position: center;
-  height: 80vh;
+  min-height: 80vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,6 +38,7 @@ export default {
 .shadow {
   width: 100%;
   height: 100%;
+  min-height: 80vh;
   margin: 0;
   background-color: rgba(0, 0, 0, 0.5);
 }

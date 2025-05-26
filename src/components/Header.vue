@@ -26,6 +26,19 @@
               >Mon compte</router-link
             >
           </li>
+          <li>
+            <router-link
+              v-if="connected && role == '0'"
+              to="/admin"
+              class="admin-header"
+              ><img
+                src="@/assets/engrenage.svg"
+                alt="Admin"
+                class="admin-img"
+              />
+              Admin
+            </router-link>
+          </li>
         </ul>
       </nav>
     </div>
@@ -59,19 +72,28 @@
             >Mon compte</router-link
           >
         </div>
+        <div class="line">
+          <router-link
+            v-if="connected && role == '0'"
+            to="/admin"
+            class="admin-header"
+            ><img src="@/assets/engrenage.svg" alt="Admin" class="admin-img" />
+            Admin
+          </router-link>
+        </div>
       </div>
     </div>
   </header>
 </template>
 
 <script>
-import router from "@/router";
 import { useRouter } from "vue-router";
 export default {
   name: "Header",
   data() {
     return {
       connected: false,
+      role: null,
       router: null,
     };
   },
@@ -89,7 +111,15 @@ export default {
     this.router = useRouter();
     this.$router.afterEach(() => {
       // Check if the user is connected
+      if (localStorage.getItem("tokenExpiration") < Date.now()) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        this.connected = false;
+        this.role = null;
+        return;
+      }
       this.connected = !!localStorage.getItem("token");
+      this.role = localStorage.getItem("role");
     });
   },
 };
@@ -163,6 +193,24 @@ ul {
   background-color: #bee3db;
   padding: 10px 20px;
   border-radius: 5px;
+}
+
+.admin-header {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #000000;
+  font-weight: bold;
+  background-color: #bee3db;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+.admin-img {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
 }
 
 .mobile_header {
