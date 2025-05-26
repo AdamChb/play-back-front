@@ -5,10 +5,10 @@ import GameView from "../views/GameView.vue";
 import EventView from "../views/EventView.vue";
 import EventsView from "../views/EventsView.vue";
 import RegisterView from "../views/RegisterView.vue";
-import MyAccountView from "../views/MyAccountView.vue";
 import GamesView from "../views/GamesView.vue";
 import CafeView from "../views/CafeView.vue";
 import AccountView from "../views/AccountView.vue";
+import AdminView from "@/views/AdminView.vue";
 
 const routes = [
   {
@@ -60,6 +60,11 @@ const routes = [
     path: "/account",
     name: "Account",
     component: AccountView,
+  },
+  {
+    path: "/admin",
+    name: "Admin",
+    component: AdminView,
   },
 ];
 
