@@ -32,7 +32,7 @@
                     src="@/assets/pinceau.svg"
                     alt="Editer"
                     class="icon"
-                    @click="editUser(user)"
+                    @click="editUser(user.id)"
                   />
                   <img
                     src="@/assets/poubelle.svg"
@@ -106,23 +106,7 @@ export default {
   },
   data() {
     return {
-      users: [
-        {
-          id: 1,
-          name: "Alice Dupont",
-          role: "Administrateur",
-        },
-        {
-          id: 2,
-          name: "Bob Martin",
-          role: "Employé",
-        },
-        {
-          id: 3,
-          name: "Charlie Leblanc",
-          role: "Client",
-        },
-      ],
+      users: Object,
       actualUser: {
         id: null,
         name: "",
@@ -134,8 +118,40 @@ export default {
   },
   methods: {
     search(query) {
-      // Implement search functionality here
       console.log("Searching for:", query);
+      if (query.trim() === "") {
+        this.getAllUsers();
+        return;
+      }
+      fetch(
+        "https://play-back.api.arcktis.fr/api/auth/search?string=" + query,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+        .then((response) => {
+          console.log("Response:", response);
+          if (!response.ok) {
+            throw new Error("Failed to fetch users");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          this.users = [];
+          console.log("Fetched users:", data);
+          data.forEach((user) => {
+            this.users.push({
+              id: user.ID_utilisateur,
+              name: user.pseudo,
+              email: user.email,
+              role: ["Administrateur", "Employé", "Client"][user.role_user],
+            });
+          });
+        })
+        .catch((error) => console.error("Error:", error));
     },
     addUser() {
       // Logic to add a new user
@@ -147,13 +163,15 @@ export default {
         role: "Client",
       };
     },
-    editUser(user) {
+    editUser(userid) {
       // Logic to edit the selected user
-      this.actualUser = { ...user };
+      console.log("Editing user:", userid);
+      this.actualUser = this.users.find((user) => user.id === userid);
     },
     deleteUser(userId) {
       if (confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")) {
-        fetch("https://play-back.api.arcktis.fr/api/auth/delete/", {
+        console.log("Deleting user:", userId);
+        fetch("https://play-back.api.arcktis.fr/api/auth/delete", {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -174,11 +192,12 @@ export default {
         alert("Veuillez remplir tous les champs.");
         return;
       }
-      const role = Map({
-        Administrateur: 0,
-        Employé: 1,
-        Client: 2,
-      }).get(this.actualUser.role);
+      const role =
+        this.actualUser.role === "Administrateur"
+          ? 0
+          : this.actualUser.role === "Employé"
+          ? 1
+          : 2;
       if (this.actualUser.id === -1) {
         fetch("https://play-back.api.arcktis.fr/api/auth/create", {
           method: "POST",
@@ -190,7 +209,7 @@ export default {
             pseudo: this.actualUser.name,
             email: this.actualUser.email,
             password: this.actualUser.password,
-            role: role,
+            role_user: role,
           }),
         })
           .then((response) => {
@@ -204,7 +223,7 @@ export default {
               id: data.id,
               name: this.actualUser.name,
               email: this.actualUser.email,
-              role: role,
+              role: ["Administrateur", "Employé", "Client"][role],
             });
             this.actualUser = { id: null, name: "", email: "", role: "Client" };
           })
@@ -245,33 +264,41 @@ export default {
             }
             this.actualUser = { id: null, name: "", email: "", role: "Client" };
           })
-          .catch((error) => console.error("Error:", error));
+          .catch((error) => alert("Error:", error));
       }
+    },
+    getAllUsers() {
+      fetch("https://play-back.api.arcktis.fr/api/auth/getAllUsers", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+        .then((response) => {
+          console.log("Response:", response);
+          if (!response.ok) {
+            throw new Error("Failed to fetch users");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Fetched users:", data);
+          this.users = [];
+          data.forEach((user) => {
+            this.users.push({
+              id: user.ID_utilisateur,
+              name: user.pseudo,
+              email: user.email,
+              role: ["Administrateur", "Employé", "Client"][user.role_user],
+            });
+          });
+        })
+        .catch((error) => console.error("Error:", error));
     },
   },
   mounted() {
     // Fetch initial user data from the API
-    fetch("https://play-back.api.arcktis.fr/api/auth/getAllUsers", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch users");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        this.users = data.map((user) => ({
-          id: user.id,
-          name: user.pseudo,
-          email: user.email,
-          role: ["Administrateur", "Employé", "Client"][user.role],
-        }));
-      })
-      .catch((error) => console.error("Error:", error));
+    this.getAllUsers();
   },
 };
 </script>
