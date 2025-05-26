@@ -5,7 +5,13 @@
 
       <div class="content-wrapper">
         <div class="search-container">
-          <Searchbar @search="search" />
+          <div class="search-section">
+            <Searchbar @search="search" />
+          </div>
+          <div class="add-user">
+            <img src="@/assets/add.svg" alt="Ajouter un utilisateur" />
+            <span>Add</span>
+          </div>
         </div>
 
         <div class="card-container">
@@ -32,6 +38,11 @@
               </tr>
             </tbody>
           </table>
+        </div>
+        <div class="info-user">
+          <h2 class="name">{{ actualUser.name }}</h2>
+          <h3 class="email">{{ actualUser.email }}</h3>
+          <p class="role">{{ actualUser.role }}</p>
         </div>
       </div>
     </div>
@@ -64,6 +75,12 @@ export default {
           role: "Client",
         },
       ],
+      actualUser: {
+        id: null,
+        name: "Nom d'utilisateur",
+        email: "Email",
+        role: "Rôle",
+      },
     };
   },
   methods: {
@@ -105,7 +122,34 @@ export default {
 
 .search-container {
   display: flex;
-  width: 50%;
+  justify-content: space-between;
+  width: 60%;
+}
+
+.search-section {
+  display: flex;
+  width: 75%;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-user {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+  background-color: #ffffff;
+  width: 150px;
+  border: 2px solid #3f424d;
+  border-radius: 10px;
+  color: #3f424d;
+  font-size: 1.2em;
+}
+
+.add-user img {
+  width: 15px;
+  height: 15px;
 }
 
 .card-container {
@@ -158,5 +202,14 @@ export default {
   text-align: left;
   border-bottom: 1px solid #ddd;
   color: #000000;
+}
+
+.info-user {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #000000;
+  padding: 2em;
+  border-radius: 10px;
 }
 </style>
