@@ -5,10 +5,10 @@ import GameView from "../views/GameView.vue";
 import EventView from "../views/EventView.vue";
 import EventsView from "../views/EventsView.vue";
 import RegisterView from "../views/RegisterView.vue";
-import MyAccountView from "../views/MyAccountView.vue";
 import GamesView from "../views/GamesView.vue";
 import CafeView from "../views/CafeView.vue";
 import AccountView from "../views/AccountView.vue";
+import AdminView from "@/views/AdminView.vue";
 
 const routes = [
   {
@@ -35,39 +35,44 @@ const routes = [
     path: "/game",
     name: "Game",
     component: GameView,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: "/event",
     name: "Event",
     component: EventView,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: "/events",
     name: "Events",
     component: EventsView,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: "/games",
     name: "Games",
     component: GamesView,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: "/myaccount",
     name: "Account",
     component: AccountView,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: "/game/:id",
     name: "GameView",
     component: GameView,
     props: true,
-    meta: { requiresAuth: true }
-  }
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/admin",
+    name: "Admin",
+    component: AdminView,
+  },
 ];
 
 const router = createRouter({
