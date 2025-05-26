@@ -117,7 +117,7 @@ export default {
   methods: {
     submitForm() {
       // Handle login logic here
-      fetch("localhost:3000/api/auth/login", {
+      fetch("https://play-back.api.arcktis.fr/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

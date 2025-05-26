@@ -65,11 +65,14 @@
 </template>
 
 <script>
+import router from "@/router";
+import { useRouter } from "vue-router";
 export default {
   name: "Header",
   data() {
     return {
       connected: false,
+      router: null,
     };
   },
   methods: {
@@ -81,6 +84,13 @@ export default {
           ? "flex"
           : "none";
     },
+  },
+  mounted() {
+    this.router = useRouter();
+    this.$router.afterEach(() => {
+      // Check if the user is connected
+      this.connected = !!localStorage.getItem("token");
+    });
   },
 };
 </script>

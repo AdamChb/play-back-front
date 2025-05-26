@@ -2,12 +2,7 @@
   <div class="searchbar-container">
     <div class="searchbar">
       <div class="searchbar-input">
-        <input
-          type="text"
-          :placeholder="placeholder"
-          v-model="searchQuery"
-          @input="onSearch"
-        />
+        <input type="text" :placeholder="placeholder" v-model="searchQuery" />
       </div>
       <div class="searchbar-icon">
         <img @click="onSearch" src="@/assets/loupe.svg" alt="recherche" />

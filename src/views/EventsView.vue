@@ -4,7 +4,7 @@
 
     <div class="content-wrapper">
       <div class="search-container">
-        <Searchbar />
+        <Searchbar @search="search" />
       </div>
 
       <div class="card-container">
@@ -55,6 +55,29 @@ export default {
         },
       ],
     };
+  },
+  methods: {
+    search(query) {
+      // Implement search functionality here
+      // This is a placeholder for the search logic
+      console.log("Searching for:", query);
+      fetch(
+        "https://play-back.api.arcktis.fr/api/events/search?name=" + query,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          this.events = data; // Update events based on search results
+        })
+        .catch((error) => {
+          console.error("Error fetching events:", error);
+        });
+    },
   },
 };
 </script>

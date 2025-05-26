@@ -4,7 +4,7 @@
 
     <div class="content-wrapper">
       <div class="search-container">
-        <Searchbar />
+        <Searchbar @search="search" />
       </div>
 
       <div class="card-container">
@@ -59,6 +59,23 @@ export default {
         },
       ],
     };
+  },
+  methods: {
+    search(query) {
+      fetch("https://play-back.api.arcktis.fr/api/games/search?name=" + query, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          this.games = data; // Mettre à jour la liste des jeux avec les résultats de la recherche
+        })
+        .catch((error) => {
+          console.error("Erreur lors de la recherche de jeux:", error);
+        });
+    },
   },
 };
 </script>
