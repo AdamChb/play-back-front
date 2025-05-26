@@ -35,25 +35,21 @@ const routes = [
     path: "/game",
     name: "Game",
     component: GameView,
-    meta: { requiresAuth: true },
   },
   {
     path: "/event",
     name: "Event",
     component: EventView,
-    meta: { requiresAuth: true },
   },
   {
     path: "/events",
     name: "Events",
     component: EventsView,
-    meta: { requiresAuth: true },
   },
   {
     path: "/games",
     name: "Games",
     component: GamesView,
-    meta: { requiresAuth: true },
   },
   {
     path: "/myaccount",
@@ -66,7 +62,6 @@ const routes = [
     name: "GameView",
     component: GameView,
     props: true,
-    meta: { requiresAuth: true },
   },
   {
     path: "/admin",
