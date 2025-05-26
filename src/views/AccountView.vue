@@ -12,25 +12,20 @@
         <div class="account-actions">
           <button class="btn">Changer nom d'utilisateur</button>
           <button class="btn">Changer mot de passe</button>
+          <button class="btn logout-btn" @click="logout">Se déconnecter</button>
         </div>
       </div>
     </div>
 
     <!-- Mes évènements -->
     <div class="event-section">
-      <h3 class="section-title">Mes évènements <span class="count">32</span></h3>
+      <h3 class="section-title">Mes évènements <span class="count">{{ upcomingEvents.length }}</span></h3>
       <div class="card-scroll-wrapper">
         <div class="scroll-arrow left" @click="scrollLeft('eventsRow')">
           <span>&#8249;</span>
         </div>
         <div class="card-row" ref="eventsRow">
-          <EventCard class="event-card" />
-          <EventCard class="event-card" />
-          <EventCard class="event-card" />
-          <EventCard class="event-card" />
-          <EventCard class="event-card" />
-          <EventCard class="event-card" />
-          <EventCard class="event-card" />
+          <EventCard v-for="event in upcomingEvents" :key="event.id" class="event-card" />
         </div>
         <div class="scroll-arrow right" @click="scrollRight('eventsRow')">
           <span>&#8250;</span>
@@ -40,15 +35,13 @@
 
     <!-- Mes anciens évènements -->
     <div class="event-section">
-      <h3 class="section-title">Mes anciens évènements <span class="count">32</span></h3>
+      <h3 class="section-title">Mes anciens évènements <span class="count">{{ pastEvents.length }}</span></h3>
       <div class="card-scroll-wrapper">
         <div class="scroll-arrow left" @click="scrollLeft('oldEventsRow')">
           <span>&#8249;</span>
         </div>
         <div class="card-row" ref="oldEventsRow">
-          <EventCard class="event-card" />
-          <EventCard class="event-card" />
-          <EventCard class="event-card" />
+          <EventCard v-for="event in pastEvents" :key="event.id" class="event-card" />
         </div>
         <div class="scroll-arrow right" @click="scrollRight('oldEventsRow')">
           <span>&#8250;</span>
@@ -61,19 +54,14 @@
       <h3 class="section-title">
         Mes jeux favoris
         <img src="@/assets/empty_coeur.svg" class="icon" />
-        <span class="count">32</span>
+        <span class="count">{{ favoriteGames.length }}</span>
       </h3>
       <div class="card-scroll-wrapper">
         <div class="scroll-arrow left" @click="scrollLeft('favoritesRow')">
           <span>&#8249;</span>
         </div>
         <div class="card-row" ref="favoritesRow">
-          <GameCard class="game-card" />
-          <GameCard class="game-card" />
-          <GameCard class="game-card" />
-          <GameCard class="game-card" />
-          <GameCard class="game-card" />
-          <GameCard class="game-card" />
+          <GameCard v-for="game in favoriteGames" :key="game.id" :title="game.title" class="game-card" />
         </div>
         <div class="scroll-arrow right" @click="scrollRight('favoritesRow')">
           <span>&#8250;</span>
@@ -85,17 +73,15 @@
     <div class="game-section">
       <h3 class="section-title">
         Mes jeux à tester
-        <img src="@/assets/empty_star.svg" class="icon" />
-        <span class="count">32</span>
+        <img src="@/assets/empty_etoile.svg" class="icon" />
+        <span class="count">{{ gamesToTest.length }}</span>
       </h3>
       <div class="card-scroll-wrapper">
         <div class="scroll-arrow left" @click="scrollLeft('toTestRow')">
           <span>&#8249;</span>
         </div>
         <div class="card-row" ref="toTestRow">
-          <GameCard class="game-card" />
-          <GameCard class="game-card" />
-          <GameCard class="game-card" />
+          <GameCard v-for="game in gamesToTest" :key="game.id" :title="game.title" class="game-card" />
         </div>
         <div class="scroll-arrow right" @click="scrollRight('toTestRow')">
           <span>&#8250;</span>
@@ -108,16 +94,14 @@
       <h3 class="section-title">
         Mes jeux essayés
         <img src="@/assets/verifier.svg" class="icon" />
-        <span class="count">32</span>
+        <span class="count">{{ testedGames.length }}</span>
       </h3>
       <div class="card-scroll-wrapper">
         <div class="scroll-arrow left" @click="scrollLeft('testedRow')">
           <span>&#8249;</span>
         </div>
         <div class="card-row" ref="testedRow">
-          <GameCard class="game-card" />
-          <GameCard class="game-card" />
-          <GameCard class="game-card" />
+          <GameCard v-for="game in testedGames" :key="game.id" :title="game.title" class="game-card" />
         </div>
         <div class="scroll-arrow right" @click="scrollRight('testedRow')">
           <span>&#8250;</span>
@@ -128,8 +112,8 @@
 </template>
 
 <script>
-import EventCard from '@/components/EventCard.vue'
-import GameCard from '@/components/GameCard.vue'
+import EventCard from '@/components/EventCard.vue';
+import GameCard from '@/components/GameCard.vue';
 
 export default {
   name: 'AccountView',
@@ -137,26 +121,50 @@ export default {
     EventCard,
     GameCard
   },
+  data() {
+    return {
+      upcomingEvents: [
+        { id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }
+      ],
+      pastEvents: [
+        { id: 5 }, { id: 6 }, { id: 7 }
+      ],
+      favoriteGames: [
+        { id: 1, title: 'Catan' },
+        { id: 2, title: '7 Wonders' },
+        { id: 3, title: 'Azul' }
+      ],
+      gamesToTest: [
+        { id: 4, title: 'Splendor' },
+        { id: 5, title: 'Takenoko' }
+      ],
+      testedGames: [
+        { id: 6, title: 'Monopoly' },
+        { id: 7, title: 'Dixit' },
+        { id: 8, title: 'Carcassonne' }
+      ]
+    };
+  },
   methods: {
     scrollRight(refName) {
       const container = this.$refs[refName];
-      if (container && container.scrollBy) {
-        // Trouve la largeur d’une carte + son espace
-        const card = container.querySelector('.event-card, .game-card');
-        const scrollAmount = card ? card.offsetWidth + 24 : 250;
-        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-      }
+      const card = container?.querySelector('.event-card, .game-card');
+      const scrollAmount = card ? card.offsetWidth + 24 : 250;
+      container?.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     },
     scrollLeft(refName) {
-    const container = this.$refs[refName];
-    if (container && container.scrollBy) {
-      const card = container.querySelector('.event-card, .game-card');
+      const container = this.$refs[refName];
+      const card = container?.querySelector('.event-card, .game-card');
       const scrollAmount = card ? card.offsetWidth + 24 : 250;
-      container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      container?.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    },
+    logout() {
+      localStorage.removeItem("token");
+      this.$router.push("/login");
     }
+
   }
-  }
-}
+};
 </script>
 
 <style scoped>
@@ -276,6 +284,14 @@ export default {
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 2;
+}
+
+.logout-btn {
+  background-color: #e57373;
+  color: white;
+}
+.logout-btn:hover {
+  background-color: #d32f2f;
 }
 
 

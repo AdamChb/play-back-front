@@ -8,13 +8,18 @@
       </div>
 
       <div class="card-container">
-        <GameCard
+        <router-link
           v-for="game in games"
           :key="game.id"
-          :id="game.id"
-          :title="game.title"
-          :image="game.image"
-        />
+          :to="`/game/${game.id}`"
+          class="game_link"
+        >
+          <GameCard
+            :id="game.id"
+            :title="game.title"
+            :image="game.image"
+          />
+        </router-link>
       </div>
     </div>
   </div>
@@ -32,50 +37,41 @@ export default {
   },
   data() {
     return {
-      games: [
-        {
-          id: 1,
-          title: "Carcassonne",
-          image:
-            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
-        },
-        {
-          id: 2,
-          title: "Catan",
-          image:
-            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
-        },
-        {
-          id: 3,
-          title: "Dixit",
-          image:
-            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
-        },
-        {
-          id: 4,
-          title: "Monopoly",
-          image:
-            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
-        },
-      ],
+      games: [],
     };
   },
   methods: {
-    search(query) {
-      fetch("https://play-back.api.arcktis.fr/api/games/search?name=" + query, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          this.games = data; // Mettre à jour la liste des jeux avec les résultats de la recherche
-        })
-        .catch((error) => {
-          console.error("Erreur lors de la recherche de jeux:", error);
-        });
+    async fetchGames() {
+      try {
+        const res = await fetch("https://play-back.api.arcktis.fr/api/games/all");
+        const data = await res.json();
+
+        this.games = data.map((game) => ({
+          id: Number(game.ID_jeu),
+          title: game.nom,
+          image: game.image,
+        }));
+      } catch (error) {
+        console.error("Erreur lors du chargement des jeux :", error);
+      }
     },
+    async search(query) {
+      try {
+        const res = await fetch("https://play-back.api.arcktis.fr/api/games/search?name=" + query);
+        const data = await res.json();
+
+        this.games = data.map((game) => ({
+          id: Number(game.ID_jeu),
+          title: game.nom,
+          image: game.image,
+        }));
+      } catch (error) {
+        console.error("Erreur lors de la recherche de jeux :", error);
+      }
+    },
+  },
+  mounted() {
+    this.fetchGames();
   },
 };
 </script>
@@ -86,8 +82,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center; /* centrer verticalement */
-  /* supprime padding: 2rem pour qu'il corresponde à Events */
+  justify-content: center;
 }
 
 .title {
@@ -123,5 +118,10 @@ export default {
   gap: 20px;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+.game_link {
+  text-decoration: none;
+  color: inherit;
 }
 </style>

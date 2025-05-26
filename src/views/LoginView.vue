@@ -3,12 +3,12 @@
     <div class="auth-panel">
       <h2 class="auth-title">Connexion</h2>
       <form @submit.prevent="submitForm" class="auth-form">
-        <label for="username" class="auth-label">Nom d'utilisateur</label>
+        <label for="email" class="auth-label">Email</label>
         <input
           type="text"
-          id="username"
-          v-model="username"
-          name="username"
+          id="email"
+          v-model="email"
+          name="email"
           placeholder="Ex : ajdmabuerdcjk"
           class="auth-input"
           required
@@ -110,7 +110,7 @@ export default {
   name: "LoginView",
   data() {
     return {
-      username: "",
+      email: "",
       password: "",
     };
   },
@@ -136,8 +136,7 @@ export default {
         .then((data) => {
           // Store the token in local storage
           localStorage.setItem("token", data.token);
-          console.log("Login successful", data);
-          router.push("/home");
+          router.push("/");
         })
         .catch((error) => {
           console.error("Error:", error);
