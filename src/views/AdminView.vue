@@ -8,7 +8,7 @@
           <div class="search-section">
             <Searchbar @search="search" />
           </div>
-          <div class="add-user">
+          <div class="add-user" @click="addUser">
             <img src="@/assets/add.svg" alt="Ajouter un utilisateur" />
             <span>Add</span>
           </div>
@@ -28,11 +28,17 @@
                 <td>{{ user.name }}</td>
                 <td>{{ user.role }}</td>
                 <td>
-                  <img src="@/assets/pinceau.svg" alt="Editer" class="icon" />
+                  <img
+                    src="@/assets/pinceau.svg"
+                    alt="Editer"
+                    class="icon"
+                    @click="editUser(user)"
+                  />
                   <img
                     src="@/assets/poubelle.svg"
                     alt="Supprimer"
                     class="icon"
+                    @click="deleteUser(user.id)"
                   />
                 </td>
               </tr>
@@ -40,9 +46,51 @@
           </table>
         </div>
         <div class="info-user">
-          <h2 class="name">{{ actualUser.name }}</h2>
-          <h3 class="email">{{ actualUser.email }}</h3>
-          <p class="role">{{ actualUser.role }}</p>
+          <h2 class="name">Nom d'utilisateur</h2>
+          <input
+            v-if="actualUser.id"
+            class="name-input"
+            type="text"
+            v-model="actualUser.name"
+            placeholder="Ex : ajdmabuerdcjk"
+          />
+          <h3 class="email">Email</h3>
+          <input
+            v-if="actualUser.id"
+            class="email-input"
+            type="email"
+            v-model="actualUser.email"
+            placeholder="Ex : ajdmab@gmail.com"
+          />
+          <h3 class="password">Mot de passe</h3>
+          <input
+            v-if="actualUser.id === -1"
+            class="email-input"
+            type="password"
+            v-model="actualUser.password"
+            placeholder="•••••••••••••"
+          />
+          <input
+            v-else-if="actualUser.id"
+            class="email-input"
+            type="password"
+            v-model="actualUser.password"
+            placeholder="•••••••••••••"
+            disabled
+          />
+          <p class="role">Rôle</p>
+          <select
+            v-model="actualUser.role"
+            v-if="actualUser.id"
+            class="role-select"
+          >
+            <option value="Administrateur">Administrateur</option>
+            <option value="Employé">Employé</option>
+            <option value="Client">Client</option>
+          </select>
+          <button v-if="actualUser.id" class="save-btn" @click="saveUser()">
+            Enregistrer
+          </button>
         </div>
       </div>
     </div>
@@ -77,9 +125,10 @@ export default {
       ],
       actualUser: {
         id: null,
-        name: "Nom d'utilisateur",
-        email: "Email",
-        role: "Rôle",
+        name: "",
+        email: "",
+        password: "",
+        role: "",
       },
     };
   },
@@ -88,6 +137,141 @@ export default {
       // Implement search functionality here
       console.log("Searching for:", query);
     },
+    addUser() {
+      // Logic to add a new user
+      this.actualUser = {
+        id: -1,
+        name: "",
+        email: "",
+        password: "",
+        role: "Client",
+      };
+    },
+    editUser(user) {
+      // Logic to edit the selected user
+      this.actualUser = { ...user };
+    },
+    deleteUser(userId) {
+      if (confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")) {
+        fetch("https://play-back.api.arcktis.fr/api/auth/delete/", {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ id: userId }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Failed to delete user");
+            }
+            this.users = this.users.filter((user) => user.id !== userId);
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+    },
+    saveUser() {
+      if (!this.actualUser.name || !this.actualUser.email) {
+        alert("Veuillez remplir tous les champs.");
+        return;
+      }
+      const role = Map({
+        Administrateur: 0,
+        Employé: 1,
+        Client: 2,
+      }).get(this.actualUser.role);
+      if (this.actualUser.id === -1) {
+        fetch("https://play-back.api.arcktis.fr/api/auth/create", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            pseudo: this.actualUser.name,
+            email: this.actualUser.email,
+            password: this.actualUser.password,
+            role: role,
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Failed to create user");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            this.users.push({
+              id: data.id,
+              name: this.actualUser.name,
+              email: this.actualUser.email,
+              role: role,
+            });
+            this.actualUser = { id: null, name: "", email: "", role: "Client" };
+          })
+          .catch((error) => console.error("Error:", error));
+      } else {
+        fetch(
+          `https://play-back.api.arcktis.fr/api/auth/update/${this.actualUser.id}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              pseudo: this.actualUser.name,
+              email: this.actualUser.email,
+              role: role,
+            }),
+          }
+        )
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Failed to update user");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            const index = this.users.findIndex(
+              (user) => user.id === this.actualUser.id
+            );
+            if (index !== -1) {
+              this.users[index] = {
+                id: this.actualUser.id,
+                name: this.actualUser.name,
+                email: this.actualUser.email,
+                role: role,
+              };
+            }
+            this.actualUser = { id: null, name: "", email: "", role: "Client" };
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+    },
+  },
+  mounted() {
+    // Fetch initial user data from the API
+    fetch("https://play-back.api.arcktis.fr/api/auth/getAllUsers", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch users");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        this.users = data.map((user) => ({
+          id: user.id,
+          name: user.pseudo,
+          email: user.email,
+          role: ["Administrateur", "Employé", "Client"][user.role],
+        }));
+      })
+      .catch((error) => console.error("Error:", error));
   },
 };
 </script>
@@ -211,5 +395,34 @@ export default {
   color: #000000;
   padding: 2em;
   border-radius: 10px;
+}
+
+.name-input,
+.email-input {
+  width: 50%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 2px solid #3f424d;
+  border-radius: 10px;
+}
+
+.role-select {
+  width: 50%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 2px solid #3f424d;
+  border-radius: 10px;
+}
+
+.save-btn {
+  background-color: #89b0ae;
+  color: white;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 25%;
+  font-size: 16px;
 }
 </style>
