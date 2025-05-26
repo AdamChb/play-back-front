@@ -152,9 +152,8 @@ export default {
       }
     },
   },
-};
+};*/
 </script>
-*/
 
 <template>
   <div class="background">
@@ -268,12 +267,9 @@ button.cta-button {
 }
 
 .background {
-  background-image: url("../assets/bg.jpeg");
-  background-size: cover;
-  background-repeat: no-repeat;
   background-position: center;
   margin: 0;
-  height: 93vh;
+  min-height: 80vh;
   width: 100%;
   display: flex;
   justify-content: center;
