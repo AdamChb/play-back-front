@@ -136,6 +136,11 @@ export default {
         .then((data) => {
           // Store the token in local storage
           localStorage.setItem("token", data.token);
+          localStorage.setItem("role", data.user.role);
+          localStorage.setItem(
+            "tokenExpiration",
+            new Date().getTime() + 3600000
+          ); // 1 hour expiration
           router.push("/");
         })
         .catch((error) => {
