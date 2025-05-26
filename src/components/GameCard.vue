@@ -2,16 +2,29 @@
 export default {
   name: "GameCard",
   props: {
-    book: Object,
+    id: {
+      type: Number,
+      required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+    },
+    image: {
+      type: String,
+      default:
+        "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
+    },
   },
-  /*
+};
+/*
   methods: {
     async toLike(game) {
       if (!this.isLoggedIn) {
         alert("Vous devez être connecté pour aimer un jeu!");
         return;
       }
-      
+
       //Faudra modifier le lien
       const response = await fetch("http://localhost:3000/api/auth/likebook", {
         method: "POST",
@@ -60,15 +73,14 @@ export default {
     }
   },
   */
-};
 </script>
 
 <template>
   <div class="game-card">
     <div class="image-container">
-      <img src="@/assets/jeu_ex.png" alt="Jeu" />
+      <img :src="this.image" alt="Jeu" />
     </div>
-    <p class="game-title">Carcassonne</p>
+    <p class="game-title">{{ this.title }}</p>
     <div class="icons">
       <img src="@/assets/coeur.svg" alt="Like" class="icon" />
       <img src="@/assets/etoile.svg" alt="Favori" class="icon" />
