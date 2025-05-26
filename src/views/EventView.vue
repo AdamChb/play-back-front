@@ -10,16 +10,16 @@
               class="calendar-asset"
             />
             <div class="calendar-text">
-              <div class="month">June</div>
-              <div class="day">27</div>
+              <div class="month">{{ month }}</div>
+              <div class="day">{{ day }}</div>
             </div>
           </div>
-          <div class="time">18h - 23h</div>
+          <div class="time">{{ event.startTime }} - {{ event.endTime }}</div>
         </div>
 
         <div class="event-details">
           <div class="event-title-row">
-            <h2 class="event-title">Session jeux de plateau</h2>
+            <h2 class="event-title">{{ event.title }}</h2>
             <div class="action-right">
               <div class="event-participants">
                 <img
@@ -27,20 +27,17 @@
                   alt="Utilisateurs"
                   class="user-icon"
                 />
-                <span>24/40</span>
+                <span>{{ event.participants.current }}/{{ event.participants.max }}</span>
               </div>
               <button class="register-btn">S’inscrire</button>
             </div>
           </div>
-          <p class="event-meta">Difficulté : Débutants</p>
+          <p class="event-meta">Difficulté : {{ event.difficulty }}</p>
         </div>
       </div>
 
       <p class="event-description">
-        Rejoins-nous pour une soirée conviviale autour des jeux de plateau ! Que
-        tu sois stratège confirmé ou simple curieux, viens partager un bon
-        moment, relever des défis, et découvrir de nouveaux jeux dans une
-        ambiance détendue et chaleureuse.
+        {{ event.description }}
       </p>
 
       <h3 class="games-title">Jeux proposés</h3>
@@ -67,6 +64,19 @@ export default {
   },
   data() {
     return {
+      event: {
+        title: "Session jeux de plateau",
+        date: "2024-06-27",
+        startTime: "18h",
+        endTime: "23h",
+        difficulty: "Débutants",
+        participants: {
+          current: 24,
+          max: 40,
+        },
+        description:
+          "Rejoins-nous pour une soirée conviviale autour des jeux de plateau ! Que tu sois stratège confirmé ou simple curieux, viens partager un bon moment, relever des défis, et découvrir de nouveaux jeux dans une ambiance détendue et chaleureuse.",
+      },
       games: [
         {
           id: 1,
@@ -94,6 +104,16 @@ export default {
         },
       ],
     };
+  },
+  computed: {
+    day() {
+      return new Date(this.event.date).getDate();
+    },
+    month() {
+      return new Date(this.event.date).toLocaleString("default", {
+        month: "long",
+      });
+    },
   },
 };
 </script>
