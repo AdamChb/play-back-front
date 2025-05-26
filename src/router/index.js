@@ -17,19 +17,9 @@ const routes = [
     component: HomeView,
   },
   {
-    path: "/game",
-    name: "Game",
-    component: GameView,
-  },
-  {
-    path: "/event",
-    name: "Event",
-    component: EventView,
-  },
-  {
-    path: "/events",
-    name: "Events",
-    component: EventsView,
+    path: "/login",
+    name: "Login",
+    component: LoginView,
   },
   {
     path: "/register",
@@ -37,42 +27,64 @@ const routes = [
     component: RegisterView,
   },
   {
-    path: "/myaccount",
-    name: "Myaccount",
-    component: AccountView,
-  },
-  {
-    path: "/login",
-    name: "Login",
-    component: LoginView,
-  },
-  {
-    path: "/games",
-    name: "Games",
-    component: GamesView,
-  },
-  {
     path: "/cafe",
     name: "Cafe",
     component: CafeView,
   },
   {
-    path: "/account",
-    name: "Account",
-    component: AccountView,
+    path: "/game",
+    name: "Game",
+    component: GameView,
+    meta: { requiresAuth: true }
   },
   {
-    path: '/game/:id',
-    name: 'GameView',
+    path: "/event",
+    name: "Event",
+    component: EventView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/events",
+    name: "Events",
+    component: EventsView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/games",
+    name: "Games",
+    component: GamesView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/myaccount",
+    name: "Account",
+    component: AccountView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: "/game/:id",
+    name: "GameView",
     component: GameView,
-    props: true
+    props: true,
+    meta: { requiresAuth: true }
   }
-
 ];
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
+});
+
+// 🚫 Protection d'accès
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem("token");
+  const isPublic = !to.meta.requiresAuth;
+
+  if (!isPublic && !token) {
+    next("/login");
+  } else {
+    next();
+  }
 });
 
 export default router;
