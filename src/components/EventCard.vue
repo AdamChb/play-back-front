@@ -38,7 +38,7 @@
     <p class="games" :class="{ medium: medium, large: large }">
       Jeux : Carcassone, Risk, Catan, Mysterium
     </p>
-    <button class="register-btn" :class="{ medium: medium, large: large }">
+    <button class="register-btn" :class="{ medium: medium, large: large }" @click="handleRegisterClick">
       S’inscrire
     </button>
   </div>
@@ -64,6 +64,15 @@ export default {
       large: false,
     };
   },
+  methods: {
+  handleRegisterClick() {
+    const isConnected = !!localStorage.getItem("token");
+    if (!isConnected) {
+      alert("Vous devez être connecté pour vous inscrire à un événement !");
+      return;
+    }
+  },
+},
   beforeMount() {
     if (this.size === "medium") {
       this.medium = true;
