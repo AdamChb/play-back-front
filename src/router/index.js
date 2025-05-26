@@ -8,6 +8,7 @@ import RegisterView from "../views/RegisterView.vue";
 import MyAccountView from "../views/MyAccountView.vue";
 import GamesView from "../views/GamesView.vue";
 import CafeView from "../views/CafeView.vue";
+import AccountView from "../views/AccountView.vue";
 
 const routes = [
   {
@@ -38,7 +39,7 @@ const routes = [
   {
     path: "/myaccount",
     name: "Myaccount",
-    component: MyAccountView,
+    component: AccountView,
   },
   {
     path: "/login",
@@ -54,6 +55,11 @@ const routes = [
     path: "/cafe",
     name: "Cafe",
     component: CafeView,
+  },
+  {
+    path: "/account",
+    name: "Account",
+    component: AccountView,
   },
 ];
 

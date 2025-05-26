@@ -1,150 +1,283 @@
 <template>
-    <div class="event-card">
-      <div class="event-header">
-        <div class="calendar-block">
-          <div class="calendar">
-            <img src="@/assets/calendrier.svg" alt="Calendrier" class="calendar-asset" />
-            <div class="calendar-text">
-              <div class="month">June</div>
-              <div class="day">27</div>
+  <div class="event-card" :class="{ medium: medium, large: large }">
+    <div class="event-header">
+      <div class="calendar-block">
+        <div class="calendar" :class="{ medium: medium, large: large }">
+          <img
+            src="@/assets/calendrier.svg"
+            alt="Calendrier"
+            class="calendar-asset"
+            :class="{ medium: medium, large: large }"
+          />
+          <div class="calendar-text" :class="{ medium: medium, large: large }">
+            <div class="month" :class="{ medium: medium, large: large }">
+              June
             </div>
+            <div class="day" :class="{ medium: medium, large: large }">27</div>
           </div>
-          <div class="time">18h - 23h</div>
         </div>
-        <div class="event-info">
-          <h2 class="event-title">Session jeux de plateau</h2>
-          <div class="participants">
-            <img src="@/assets/utilisateur.svg" alt="Utilisateurs" class="user-icon"/>
-            <span>40</span>
-          </div>
+        <div class="time" :class="{ medium: medium, large: large }">
+          18h - 23h
         </div>
       </div>
-      <p class="games">Jeux : Carcassone, Risk, Catan, Mysterium</p>
-      <button class="register-btn">S’inscrire</button>
+      <div class="event-info">
+        <h2 class="event-title" :class="{ medium: medium, large: large }">
+          Session jeux de plateau
+        </h2>
+        <div class="participants" :class="{ medium: medium, large: large }">
+          <img
+            src="@/assets/utilisateur.svg"
+            alt="Utilisateurs"
+            class="user-icon"
+            :class="{ medium: medium, large: large }"
+          />
+          <span>40</span>
+        </div>
+      </div>
     </div>
-  </template>
-  
-  
+    <p class="games" :class="{ medium: medium, large: large }">
+      Jeux : Carcassone, Risk, Catan, Mysterium
+    </p>
+    <button class="register-btn" :class="{ medium: medium, large: large }">
+      S’inscrire
+    </button>
+  </div>
+</template>
+
 <script>
-  export default {
-    name: 'EventCard'
-  }
+export default {
+  name: "EventCard",
+  props: {
+    size: {
+      type: String,
+      default: "medium",
+    },
+  },
+  data() {
+    return {
+      date: "27",
+      title: "Session jeux de plateau",
+      time: "19h - 23h",
+      players: 40,
+      games: ["Carcassone", "Risk", "Catan", "Mysterium"],
+      medium: false,
+      large: false,
+    };
+  },
+  beforeMount() {
+    if (this.size === "medium") {
+      this.medium = true;
+    } else if (this.size === "large") {
+      this.large = true;
+    }
+  },
+};
 </script>
-  
+
 <style scoped>
-  .event-card {
-    background-color: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    width: 300px;
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .event-header {
-    display: flex;
-    gap: 15px;
-  }
-  
-  .calendar-block {
+.event-card {
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.event-card.medium {
+  width: 20%;
+  min-width: 200px;
+  padding: 15px;
+}
+
+.event-card.large {
+  width: 41%;
+  min-width: 250px;
+  padding: 25px;
+}
+
+.event-header {
+  display: flex;
+  gap: 15px;
+}
+
+.calendar-block {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  width: 50px; 
-  }
+}
 
-  .calendar {
-  position: relative;
+.calendar-block.medium {
   width: 40px;
-  height: 40px;
-  flex-shrink: 0; 
+}
+
+.calendar-block.large {
+  width: 70px;
+}
+
+.calendar {
+  position: relative;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  object-fit: contain;
 }
-  
-  .calendar-asset {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-  
-  .calendar-text {
-    position: absolute;
-    top: 3px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    color: #3F424D;
-    font-weight: bold;
-  }
-  
-  .calendar-text .month {
-    font-size: 8px;
-  }
-  
-  .calendar-text .day {
-    margin-top: 3px;
-    font-size: 18px;
-  }
 
-  .time {
-  font-size: 8px;
-  color: #3F424D;
+.calendar.medium {
+  width: 40px;
+  height: 40px;
+}
+
+.calendar.large {
+  width: 70px;
+  height: 70px;
+}
+
+.calendar-asset {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.calendar-text {
+  position: absolute;
   text-align: center;
-  }
+  color: #3f424d;
+  font-weight: bold;
+}
 
-  .event-info {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 2px;
-  }
-  
-  .event-title {
-    margin: 0;
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .participants {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 14px;
-  }
+.calendar-text.medium {
+  top: 3px;
+  left: 0;
+  right: 0;
+}
 
-  .user-icon {
+.calendar-text.large {
+  top: 5px;
+  left: 0;
+  right: 0;
+}
+
+.calendar-text .month.medium {
+  font-size: 8px;
+}
+
+.calendar-text .month.large {
+  font-size: 12px;
+}
+
+.calendar-text .day.medium {
+  margin-top: 3px;
+  font-size: 18px;
+}
+
+.calendar-text .day.large {
+  margin-top: 5px;
+  font-size: 35px;
+}
+
+.time.medium {
+  font-size: 8px;
+  color: #3f424d;
+  text-align: center;
+}
+
+.time.large {
+  font-size: 12px;
+  color: #3f424d;
+  text-align: center;
+}
+
+.event-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  margin-top: 5px;
+  gap: 2px;
+}
+
+.event-title {
+  font-weight: bold;
+}
+
+.event-title.medium {
+  margin: 0;
+  font-size: 18px;
+}
+
+.event-title.large {
+  margin: 0;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.participants {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.participants.medium {
+  gap: 5px;
+  font-size: 14px;
+}
+
+.participants.large {
+  font-size: 20px;
+}
+
+.user-icon.medium {
   width: 16px;
   height: 16px;
-  }
-  
-  .games {
-    font-size: 15px;
-    margin: 5px 0;
-  }
-  
-  .register-btn {
-    align-self: flex-start;
-    border: 2px solid #3F424D;
-    padding: 0.5em 1em;
-    text-align: center;
-    border-radius: 0.4em;
-    color: #3F424D;
-    backdrop-filter: blur(3px);
-    background-color: rgba(255, 255, 255, 0.3);
-    transition: 0.3s;
-    animation: fadeInLeft ease 1.5s;
-    margin-top: 2em;
-  }
-  
-  .register-btn:hover {
-    transform: scale(1.04);
-    transition: 0.3s;
-  }
+}
+
+.user-icon.large {
+  width: 20px;
+  height: 20px;
+}
+
+.games.medium {
+  margin-top: 8px;
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.games.large {
+  margin-top: 20px;
+  margin-bottom: 8px;
+  font-size: 20px;
+}
+
+.register-btn {
+  align-self: flex-start;
+  border: 2px solid #3f424d;
+  padding: 0.5em 1em;
+  text-align: center;
+  border-radius: 0.4em;
+  color: #3f424d;
+  backdrop-filter: blur(3px);
+  background-color: rgba(255, 255, 255, 0.3);
+  transition: 0.3s;
+  animation: fadeInLeft ease 1.5s;
+}
+
+.register-btn.medium {
+  width: 20%;
+  min-width: 100px;
+  font-size: 14px;
+}
+
+.register-btn.large {
+  width: 30%;
+  min-width: 150px;
+  font-size: 20px;
+}
+
+.register-btn:hover {
+  transform: scale(1.04);
+  transition: 0.3s;
+}
 </style>
-  

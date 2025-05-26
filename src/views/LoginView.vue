@@ -3,12 +3,12 @@
     <div class="auth-panel">
       <h2 class="auth-title">Connexion</h2>
       <form @submit.prevent="submitForm" class="auth-form">
-        <label for="username" class="auth-label">Nom d'utilisateur</label>
+        <label for="email" class="auth-label">Email</label>
         <input
           type="text"
-          id="username"
-          v-model="username"
-          name="username"
+          id="email"
+          v-model="email"
+          name="email"
           placeholder="Ex : ajdmabuerdcjk"
           class="auth-input"
           required
@@ -110,15 +110,37 @@ export default {
   name: "LoginView",
   data() {
     return {
-      username: "",
+      email: "",
       password: "",
     };
   },
   methods: {
     submitForm() {
       // Handle login logic here
-      console.log("Login attempt with", this.username, this.password);
-      router.push("/home");
+      fetch("https://play-back.api.arcktis.fr/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: this.email,
+          password: this.password,
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Login failed");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          // Store the token in local storage
+          localStorage.setItem("token", data.token);
+          router.push("/");
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     },
   },
 };
