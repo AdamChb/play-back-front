@@ -61,6 +61,13 @@ const routes = [
     name: "Account",
     component: AccountView,
   },
+  {
+    path: '/game/:id',
+    name: 'GameView',
+    component: GameView,
+    props: true
+  }
+
 ];
 
 const router = createRouter({

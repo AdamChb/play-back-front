@@ -1,13 +1,13 @@
 <template>
-  <div class="game-view">
+  <div class="game-view" v-if="game">
     <div class="game-card-wrapper">
       <div class="game-content">
         <div class="game-img">
-          <img src="@/assets/jeu_ex.png" alt="Image du jeu" />
+          <img :src="game.image" :alt="'Image du jeu ' + game.title" />
         </div>
         <div class="game-details">
           <div class="game-title-row">
-            <h2 class="game-title">Risk</h2>
+            <h2 class="game-title">{{ game.title }}</h2>
             <div class="action-right">
               <div class="assets">
                 <img src="@/assets/empty_etoile.svg" alt="Star" class="heart-icon" />
@@ -15,18 +15,17 @@
               </div>
             </div>
           </div>
-          <p class="genre text-shadow">Genre : Plateau, construction</p>
-          <p class="infos text-shadow">3-7 joueurs</p>
-          <p class="infos text-shadow">Année de publication : 2010</p>
-          <p class="infos text-shadow">Classement du jeu : ?</p>
-          <p class="infos text-shadow">Note moyenne du jeu : ?</p>
-          <p class="infos text-shadow">Age minimum : 10</p>
+          <p class="genre text-shadow">Genre : {{ game.genre }}</p>
+          <p class="infos text-shadow">{{ game.nb_joueurs }}</p>
+          <p class="infos text-shadow">Année de publication : {{ game.annee }}</p>
+          <p class="infos text-shadow">Classement du jeu : {{ game.classement || '?' }}</p>
+          <p class="infos text-shadow">Note moyenne du jeu : {{ game.note || '?' }}</p>
+          <p class="infos text-shadow">Age minimum : {{ game.age_min }}</p>
         </div>
       </div>
 
       <p class="game-description text-shadow">
-        Dans Risk, chaque joueur incarne un général en quête de domination mondiale. Armées en main, ils s’affrontent pour conquérir des territoires sur une carte du monde, en utilisant stratégie, alliances temporaires et jets de dés.
-        Le but ? Éliminer ses adversaires et contrôler tous les continents. À chaque tour, les joueurs renforcent leurs positions, lancent des offensives et déplacent leurs troupes. Mais attention : une attaque mal calculée peut tout faire basculer.
+        {{ game.description }}
       </p>
     </div>
   </div>
@@ -34,8 +33,35 @@
 
 <script>
 export default {
-  name: "GameView"
-}
+  name: "GameView",
+  data() {
+    return {
+      game: null,
+    };
+  },
+  async created() {
+    const id = this.$route.params.id;
+    try {
+      const res = await fetch(`https://play-back.api.arcktis.fr/api/games/${id}`);
+      const data = await res.json();
+
+      this.game = {
+        id: Number(data.ID_jeu),
+        title: data.nom,
+        image: data.image,
+        genre: data.genre || "Non spécifié",
+        nb_joueurs: `${data.min_joueur} - ${data.max_joueur} joueurs`,
+        annee: data.annee_creation,
+        classement: data.rang || "?",
+        note: data.note || "?",
+        age_min: data.min_age,
+        description: data.description,
+      };
+    } catch (error) {
+      console.error("Erreur lors du chargement du jeu:", error);
+    }
+  },
+};
 </script>
 
 <style scoped>
@@ -137,7 +163,6 @@ export default {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* Responsive : image au-dessus du texte si petit écran */
 @media (max-width: 768px) {
   .game-content {
     flex-direction: column;
