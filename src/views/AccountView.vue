@@ -12,6 +12,7 @@
         <div class="account-actions">
           <button class="btn">Changer nom d'utilisateur</button>
           <button class="btn">Changer mot de passe</button>
+          <button class="btn logout-btn" @click="logout">Se déconnecter</button>
         </div>
       </div>
     </div>
@@ -156,7 +157,12 @@ export default {
       const card = container?.querySelector('.event-card, .game-card');
       const scrollAmount = card ? card.offsetWidth + 24 : 250;
       container?.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    },
+    logout() {
+      localStorage.removeItem("token");
+      this.$router.push("/login");
     }
+
   }
 };
 </script>
@@ -278,6 +284,14 @@ export default {
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 2;
+}
+
+.logout-btn {
+  background-color: #e57373;
+  color: white;
+}
+.logout-btn:hover {
+  background-color: #d32f2f;
 }
 
 
