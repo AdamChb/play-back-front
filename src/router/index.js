@@ -9,6 +9,7 @@ import MyAccountView from "../views/MyAccountView.vue";
 import GamesView from "../views/GamesView.vue";
 import CafeView from "../views/CafeView.vue";
 import AccountView from "../views/AccountView.vue";
+import CreateEventView from "../views/CreateEventView.vue";
 
 const routes = [
   {
@@ -66,6 +67,12 @@ const routes = [
     name: "GameView",
     component: GameView,
     props: true,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path:'/events/create', 
+    name:'CreateEvent', 
+    component:CreateEventView,
     meta: { requiresAuth: true }
   }
 ];
