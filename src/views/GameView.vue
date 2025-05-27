@@ -10,16 +10,48 @@
             <h2 class="game-title">{{ game.title }}</h2>
             <div class="action-right">
               <div class="assets">
-                <img src="@/assets/empty_etoile.svg" alt="Star" class="heart-icon" />
-                <img src="@/assets/empty_coeur.svg" alt="Like" class="heart-icon" />
+                <img
+                  v-if="!a_tester"
+                  src="@/assets/empty_etoile.svg"
+                  alt="Star"
+                  class="heart-icon"
+                  @click="updateStatus('à tester')"
+                />
+
+                <img
+                  v-else
+                  src="@/assets/etoile.svg"
+                  alt="Star"
+                  class="heart-icon"
+                />
+
+                <img
+                  v-if="!aime"
+                  src="@/assets/empty_coeur.svg"
+                  alt="Like"
+                  class="heart-icon"
+                  @click="updateStatus('aimé')"
+                />
+                <img
+                  v-else
+                  src="@/assets/coeur.svg"
+                  alt="Like"
+                  class="heart-icon"
+                />
               </div>
             </div>
           </div>
           <p class="genre text-shadow">Genre : {{ game.genre }}</p>
           <p class="infos text-shadow">{{ game.nb_joueurs }}</p>
-          <p class="infos text-shadow">Année de publication : {{ game.annee }}</p>
-          <p class="infos text-shadow">Classement du jeu : {{ game.classement || '?' }}</p>
-          <p class="infos text-shadow">Note moyenne du jeu : {{ game.note || '?' }}</p>
+          <p class="infos text-shadow">
+            Année de publication : {{ game.annee }}
+          </p>
+          <p class="infos text-shadow">
+            Classement du jeu : {{ game.classement || "?" }}
+          </p>
+          <p class="infos text-shadow">
+            Note moyenne du jeu : {{ game.note || "?" }}
+          </p>
           <p class="infos text-shadow">Age minimum : {{ game.age_min }}</p>
         </div>
       </div>
@@ -37,12 +69,54 @@ export default {
   data() {
     return {
       game: null,
+      aime: false,
+      a_tester: false,
     };
+  },
+  methods: {
+    updateStatus(status) {
+      const token = localStorage.getItem("token");
+      const tokenExpiration = localStorage.getItem("tokenExpiration");
+      if (!token || tokenExpiration < Date.now()) {
+        alert("Vous devez être connecté pour aimer un jeu !");
+        return;
+      }
+      fetch("https://play-back.api.arcktis.fr/api/games/user/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          id_game: this.game.id,
+          status: status,
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Erreur lors de la mise à jour du statut");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (status === "aimé") {
+            this.aime = true;
+          }
+          if (status === "à tester") {
+            this.a_tester = true;
+          }
+        })
+        .catch((error) => {
+          console.error("Erreur lors de la mise à jour du statut :", error);
+        });
+    },
   },
   async created() {
     const id = this.$route.params.id;
     try {
-      const res = await fetch(`https://play-back.api.arcktis.fr/api/games/${id}`);
+      const res = await fetch(
+        `https://play-back.api.arcktis.fr/api/games/${id}`
+      );
       const data = await res.json();
 
       this.game = {
@@ -57,6 +131,45 @@ export default {
         age_min: data.min_age,
         description: data.description,
       };
+
+      const token = localStorage.getItem("token");
+      const tokenExpiration = localStorage.getItem("tokenExpiration");
+
+      // Vérification du statut de l'utilisateur
+      if (token && tokenExpiration > Date.now()) {
+        const response = await fetch(
+          "https://play-back.api.arcktis.fr/api/games/user/" + id,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.ok) {
+          const statutData = await response.json();
+          if (!Array.isArray(statutData)) {
+            if (statutData.statut === "aimé") {
+              this.aime = true;
+            }
+            if (statutData.statut === "à tester") {
+              this.a_tester = true;
+            }
+          } else {
+            for (const statut of statutData) {
+              if (statut.statut === "aimé") {
+                this.aime = true;
+              }
+              if (statut.statut === "à tester") {
+                this.a_tester = true;
+              }
+            }
+          }
+        } else {
+          console.error("Erreur lors de la récupération du statut utilisateur");
+        }
+      }
     } catch (error) {
       console.error("Erreur lors du chargement du jeu:", error);
     }
@@ -129,6 +242,10 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.assets img {
+  cursor: pointer;
 }
 
 .heart-icon {

@@ -1,6 +1,12 @@
 <script>
 export default {
   name: "GameCard",
+  data() {
+    return {
+      a_tester: false,
+      aime: false,
+    };
+  },
   props: {
     id: {
       type: Number,
@@ -16,63 +22,89 @@ export default {
         "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
     },
   },
-};
-/*
   methods: {
-    async toLike(game) {
-      if (!this.isLoggedIn) {
-        alert("Vous devez être connecté pour aimer un jeu!");
+    updateStatus(status) {
+      const token = localStorage.getItem("token");
+      const tokenExpiration = localStorage.getItem("tokenExpiration");
+      if (!token || tokenExpiration < Date.now()) {
+        alert("Vous devez être connecté pour aimer un jeu !");
         return;
       }
-
-      //Faudra modifier le lien
-      const response = await fetch("http://localhost:3000/api/auth/likebook", {
-        method: "POST",
+      fetch("https://play-back.api.arcktis.fr/api/games/user/update", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          gameId: game.Id_Game,
+          id_game: this.game.id,
+          status: status,
         }),
-      });
-
-      if (!response.ok) {
-        book.Has_Liked = !book.Has_Liked;
-        book.Total_Likes -= 1;
-      }
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Erreur lors de la mise à jour du statut");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (status === "aimé") {
+            this.aime = true;
+          }
+          if (status === "à tester") {
+            this.a_tester = true;
+          }
+        })
+        .catch((error) => {
+          console.error("Erreur lors de la mise à jour du statut :", error);
+        });
     },
-    async unLike(game) {
-      if (!this.isLoggedIn) {
-        alert("Vous devez être connecté pour aimer un jeu!");
-        return;
+  },
+  async created() {
+    try {
+      const token = localStorage.getItem("token");
+      const tokenExpiration = localStorage.getItem("tokenExpiration");
+
+      // Vérification du statut de l'utilisateur
+      if (token && tokenExpiration > Date.now()) {
+        const response = await fetch(
+          "https://play-back.api.arcktis.fr/api/games/user/" + this.id,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.ok) {
+          const statutData = await response.json();
+          if (!Array.isArray(statutData)) {
+            if (statutData.statut === "aimé") {
+              this.aime = true;
+            }
+            if (statutData.statut === "à tester") {
+              this.a_tester = true;
+            }
+          } else {
+            for (const statut of statutData) {
+              if (statut.statut === "aimé") {
+                this.aime = true;
+              }
+              if (statut.statut === "à tester") {
+                this.a_tester = true;
+              }
+            }
+          }
+        } else {
+          console.error("Erreur lors de la récupération du statut utilisateur");
+        }
       }
-
-      book.Has_Liked = !book.Has_Liked;
-      book.Total_Likes -= 1;
-
-      const response = await fetch("http://localhost:3000/api/auth/unlikeBook", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-        body: JSON.stringify({
-          bookId: book.Id_Book,
-        }),
-      });
-
-      if (!response.ok) {
-        book.Has_Liked = !book.Has_Liked;
-        book.Total_Likes += 1;
-      }
-    },
-
-    goTo(bookId) {
-      this.$router.push({ name: "BookView", query: { id: bookId } });
+    } catch (error) {
+      console.error("Erreur lors du chargement du jeu:", error);
     }
   },
-  */
+};
 </script>
 
 <template>
@@ -82,8 +114,24 @@ export default {
     </div>
     <p class="game-title">{{ this.title }}</p>
     <div class="icons">
-      <img src="@/assets/coeur.svg" alt="Like" class="icon" />
-      <img src="@/assets/etoile.svg" alt="Favori" class="icon" />
+      <img
+        v-if="!a_tester"
+        src="@/assets/empty_etoile.svg"
+        alt="Star"
+        class="icon"
+        @click="updateStatus('à tester')"
+      />
+
+      <img v-else src="@/assets/etoile.svg" alt="Star" class="icon" />
+
+      <img
+        v-if="!aime"
+        src="@/assets/empty_coeur.svg"
+        alt="Like"
+        class="icon"
+        @click="updateStatus('aimé')"
+      />
+      <img v-else src="@/assets/coeur.svg" alt="Like" class="icon" />
     </div>
   </div>
 </template>
