@@ -26,7 +26,12 @@
                 <img src="@/assets/utilisateur.svg" alt="Utilisateurs" class="user-icon" />
                 <span>{{ event.participants.current }}/{{ event.participants.max }}</span>
               </div>
-              <button class="register-btn">S’inscrire</button>
+              <button
+                class="register-btn"
+                @click="toggleEnroll"
+              >
+                {{ enrolled ? "Se désinscrire" : "S’inscrire" }}
+              </button>
             </div>
           </div>
           <p class="event-meta">Difficulté : {{ event.difficulty }}</p>
@@ -59,65 +64,127 @@ export default {
   data() {
     return {
       loading: true,
-      error  : null,
-      event  : null,   // objet formatté
-      games  : []      // liste des jeux formattés
+      error: null,
+
+      event:   null,   // objet formaté pour l’affichage
+      games:   [],     // jeux associés
+      enrolled: false  // l’utilisateur est-il déjà inscrit ?
     };
   },
 
+  /* ------------------------------------------------------------------
+      CHARGEMENT INITIAL
+  ------------------------------------------------------------------ */
   async created() {
-    const id = this.$route.params.id;            // /events/:id
+    const id   = this.$route.params.id;
     const base = "https://play-back.api.arcktis.fr/api/events";
 
     try {
-      // deux appels en parallèle
-      const [eventRes, gamesRes] = await Promise.all([
+      /* 1. évènement + jeux en parallèle */
+      const [evRes, gamesRes] = await Promise.all([
         fetch(`${base}/get/${id}`),
         fetch(`${base}/games/${id}`)
       ]);
+      if (!evRes.ok || !gamesRes.ok) throw new Error();
 
-      if (!eventRes.ok || !gamesRes.ok) throw new Error("Réponse réseau incorrecte");
+      const rawEv   = await evRes.json();
+      const rawGame = await gamesRes.json();
 
-      const rawEvent  = await eventRes.json();
-      const rawGames  = await gamesRes.json();
-
-      /* ---------- formatage des données ---------- */
-      const start = new Date(rawEvent.date_heure);
-      const end   = new Date(start.getTime() + rawEvent.duree * 60_000);
+      /* formatage */
+      const start = new Date(rawEv.date_heure);
+      const end   = new Date(start.getTime() + rawEv.duree * 60_000);
 
       this.event = {
-        id   : rawEvent.ID_evenement,
-        title: rawEvent.nom_session,
-        date : start.toISOString().slice(0, 10),
+        id: rawEv.ID_evenement,
+        title: rawEv.nom_session,
+        dateISO: start.toISOString().slice(0, 10),
         startTime: start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         endTime  : end  .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        difficulty: rawEvent.difficulte,
+        difficulty: rawEv.difficulte,
         participants: {
-          current: rawEvent.nb_participants ?? 0,   // si tu ajoutes la colonne/alias
-          max    : rawEvent.nb_part_max
+          current: rawEv.nb_participants ?? 0,   // ajouter l’alias côté SQL si besoin
+          max    : rawEv.nb_part_max
         },
-        description: rawEvent.description
+        description: rawEv.description
       };
 
-      this.games = rawGames.map(g => ({
-        id    : g.ID_jeu,
-        title : g.nom_jeu   || g.titre,
-        image : g.image_url || g.image || ""
+      this.games = rawGame.map(g => ({
+        id:    g.ID_jeu,
+        title: g.nom_jeu   || g.titre,
+        image: g.image_url || g.image || ""
       }));
-    }
-    catch (err) {
-      console.error(err);
+
+      /* 2. état d’inscription actuel (si connecté) */
+      const token = localStorage.getItem("token");
+      if (token) {
+        const attendRes = await fetch(`${base}/attendance`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ eventId: id, userId: 0 }) // userId lu côté back
+        });
+        if (attendRes.ok) {
+          const { enrolled } = await attendRes.json();
+          this.enrolled = enrolled;
+        }
+      }
+    } catch (e) {
+      console.error(e);
       this.error = "Impossible de charger cet évènement.";
-    }
-    finally {
+    } finally {
       this.loading = false;
     }
   },
 
+  /* ------------------------------------------------------------------
+      MÉTHODES
+  ------------------------------------------------------------------ */
+  methods: {
+    /** Inscrire ou désinscrire l’utilisateur, puis mettre à jour le compteur */
+    async toggleEnroll() {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Vous devez être connecté pour vous inscrire !");
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          `https://play-back.api.arcktis.fr/api/events/enroll/${this.event.id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            }
+          }
+        );
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+
+        /* mise à jour locale du compteur */
+        if (data.enrolled && !this.enrolled)       this.event.participants.current++;
+        if (!data.enrolled &&  this.enrolled)      this.event.participants.current--;
+        this.enrolled = data.enrolled;
+
+        alert(data.message);
+      } catch (e) {
+        console.error(e);
+        alert("Erreur lors de l’inscription, réessayez plus tard.");
+      }
+    }
+  },
+
+  /* ------------------------------------------------------------------
+      COMPUTED
+  ------------------------------------------------------------------ */
   computed: {
-    day()   { return this.event ? new Date(this.event.date).getDate() : ""; },
-    month() { return this.event ? new Date(this.event.date)
-                             .toLocaleString("fr-FR", { month: "long" }) : ""; }
+    day()   { return this.event ? new Date(this.event.dateISO).getDate() : ""; },
+    month() { return this.event
+                  ? new Date(this.event.dateISO).toLocaleString("fr-FR", { month: "long" })
+                  : ""; }
   }
 };
 </script>
