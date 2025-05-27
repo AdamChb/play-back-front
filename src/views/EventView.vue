@@ -63,128 +63,111 @@ export default {
 
   data() {
     return {
-      loading: true,
-      error: null,
-
-      event:   null,   // objet formaté pour l’affichage
-      games:   [],     // jeux associés
-      enrolled: false  // l’utilisateur est-il déjà inscrit ?
+      loading   : true,
+      error     : null,
+      event     : null,   // objet formaté
+      games     : [],
+      enrolled  : false   // l’utilisateur est-il inscrit ?
     };
   },
 
-  /* ------------------------------------------------------------------
-      CHARGEMENT INITIAL
-  ------------------------------------------------------------------ */
+  /* ──────────────── CHARGEMENT INITIAL ──────────────── */
   async created() {
     const id   = this.$route.params.id;
     const base = "https://play-back.api.arcktis.fr/api/events";
 
     try {
-      /* 1. évènement + jeux en parallèle */
+      /* 1. détail + jeux en parallèle */
       const [evRes, gamesRes] = await Promise.all([
         fetch(`${base}/get/${id}`),
         fetch(`${base}/games/${id}`)
       ]);
       if (!evRes.ok || !gamesRes.ok) throw new Error();
-
       const rawEv   = await evRes.json();
       const rawGame = await gamesRes.json();
 
-      /* formatage */
+      /* format */
       const start = new Date(rawEv.date_heure);
       const end   = new Date(start.getTime() + rawEv.duree * 60_000);
 
       this.event = {
-        id: rawEv.ID_evenement,
+        id   : rawEv.ID_evenement,
         title: rawEv.nom_session,
         dateISO: start.toISOString().slice(0, 10),
-        startTime: start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        endTime  : end  .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        startTime: start.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" }),
+        endTime  : end  .toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" }),
         difficulty: rawEv.difficulte,
-        participants: {
-          current: rawEv.nb_participants ?? 0,   // ajouter l’alias côté SQL si besoin
-          max    : rawEv.nb_part_max
-        },
-        description: rawEv.description
+        participants: { current: 0, max: rawEv.nb_part_max },
+        description : rawEv.description
       };
 
       this.games = rawGame.map(g => ({
-        id:    g.ID_jeu,
-        title: g.nom_jeu   || g.titre,
-        image: g.image_url || g.image || ""
+        id:g.ID_jeu, title:g.nom_jeu||g.titre,
+        image:g.image_url||g.image||""
       }));
 
-      /* 2. état d’inscription actuel (si connecté) */
-      const token = localStorage.getItem("token");
-      if (token) {
-        const attendRes = await fetch(`${base}/attendance`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-          body: JSON.stringify({ eventId: id, userId: 0 }) // userId lu côté back
-        });
-        if (attendRes.ok) {
-          const { enrolled } = await attendRes.json();
-          this.enrolled = enrolled;
-        }
-      }
-    } catch (e) {
-      console.error(e);
-      this.error = "Impossible de charger cet évènement.";
-    } finally {
-      this.loading = false;
+      /* 2. compteur de participants + état d’inscription */
+      await Promise.all([ this.refreshCount(), this.refreshEnrollment() ]);
     }
+    catch(e){ this.error="Impossible de charger cet évènement."; console.error(e); }
+    finally { this.loading = false; }
   },
 
-  /* ------------------------------------------------------------------
-      MÉTHODES
-  ------------------------------------------------------------------ */
-  methods: {
-    /** Inscrire ou désinscrire l’utilisateur, puis mettre à jour le compteur */
-    async toggleEnroll() {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Vous devez être connecté pour vous inscrire !");
-        return;
+  /* ──────────────── MÉTHODES ──────────────── */
+  methods:{
+    /* récupère le compteur depuis /count/:id */
+    async refreshCount(){
+      const res = await fetch(`https://play-back.api.arcktis.fr/api/events/count/${this.event.id}`);
+      if(res.ok){
+        const { count } = await res.json();
+        this.event.participants.current = count;
       }
+    },
 
-      try {
+    /* récupère l’état d’inscription (optionnel : nécessite le token) */
+    async refreshEnrollment(){
+      const token = localStorage.getItem("token");
+      if(!token) return;
+      const res = await fetch(`https://play-back.api.arcktis.fr/api/events/attendance`,{
+        method:"POST",
+        headers:{ "Content-Type":"application/json", "Authorization":`Bearer ${token}` },
+        body:JSON.stringify({ eventId:this.event.id, userId:0 })
+      });
+      if(res.ok){
+        const { enrolled } = await res.json();
+        this.enrolled = enrolled;
+      }
+    },
+
+    /* inscription / désinscription puis rafraîchissement du compteur */
+    async toggleEnroll(){
+      const token = localStorage.getItem("token");
+      if(!token){ alert("Connecte-toi pour t’inscrire !"); return; }
+
+      try{
         const res = await fetch(
           `https://play-back.api.arcktis.fr/api/events/enroll/${this.event.id}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`
-            }
-          }
+          { method:"POST",
+            headers:{ "Content-Type":"application/json",
+                      "Authorization":`Bearer ${token}` } }
         );
-        if (!res.ok) throw new Error();
+        if(!res.ok) throw new Error();
         const data = await res.json();
-
-        /* mise à jour locale du compteur */
-        if (data.enrolled && !this.enrolled)       this.event.participants.current++;
-        if (!data.enrolled &&  this.enrolled)      this.event.participants.current--;
-        this.enrolled = data.enrolled;
-
-        alert(data.message);
-      } catch (e) {
+        this.enrolled = data.enrolled;      // met à jour le label bouton
+        await this.refreshCount();          // lit le compteur réel
+      }catch(e){
+        alert("Erreur lors de l’inscription, réessaie plus tard.");
         console.error(e);
-        alert("Erreur lors de l’inscription, réessayez plus tard.");
       }
     }
   },
 
-  /* ------------------------------------------------------------------
-      COMPUTED
-  ------------------------------------------------------------------ */
-  computed: {
+  /* ──────────────── COMPUTED ──────────────── */
+  computed:{
     day()   { return this.event ? new Date(this.event.dateISO).getDate() : ""; },
     month() { return this.event
-                  ? new Date(this.event.dateISO).toLocaleString("fr-FR", { month: "long" })
-                  : ""; }
+                   ? new Date(this.event.dateISO).toLocaleString("fr-FR",{ month:"long" })
+                   : ""; }
   }
 };
 </script>
