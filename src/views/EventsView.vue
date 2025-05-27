@@ -8,13 +8,16 @@
       </div>
 
       <div class="card-container">
+        <!-- écoute card-click et appelle openEvent -->
         <EventCard
-          v-for="event in events"
-          :eventId="event.ID_evenement"
-            :title="event.nom_session"
-            :date="event.date_heure"
-            :nb_participants="event.nb_part_max"
-            :duration="event.duree"
+          v-for="ev in events"
+          :key="ev.ID_evenement"
+          :eventId="ev.ID_evenement"
+          :title="ev.nom_session"
+          :date="ev.date_heure"
+          :nb_participants="ev.nb_part_max"
+          :duration="ev.duree"
+          @card-click="openEvent"
         />
       </div>
     </div>
@@ -27,50 +30,40 @@ import Searchbar from "@/components/Searchbar.vue";
 
 export default {
   name: "EventsView",
-  components: {
-    EventCard,
-    Searchbar,
-  },
+  components: { EventCard, Searchbar },
+
   data() {
-    return {
-      events: [],
-    };
+    return { events: [] };
   },
+
+  /* chargement initial ------------------------------------------------ */
   async created() {
     try {
-      const response = await fetch(
-        "https://play-back.api.arcktis.fr/api/events/next"
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      this.events = data; // Update events with fetched data
-    } catch (error) {
-      console.error("Error fetching events:", error);
+      const res  = await fetch("https://play-back.api.arcktis.fr/api/events/next");
+      if (!res.ok) throw new Error("Network response was not ok");
+      this.events = await res.json();
+    } catch (err) {
+      console.error("Error fetching events:", err);
     }
   },
+
   methods: {
-    search(query) {
-      // Implement search functionality here
-      // This is a placeholder for the search logic
-      console.log("Searching for:", query);
-      fetch(
-        "https://play-back.api.arcktis.fr/api/events/search?name=" + query,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          this.events = data; // Update events based on search results
-        })
-        .catch((error) => {
-          console.error("Error fetching events:", error);
-        });
+    /* navigation quand on clique sur la carte ------------------------ */
+    openEvent(id) {
+      this.$router.push({ name: "EventView", params: { id } });
+    },
+
+    /* recherche ------------------------------------------------------ */
+    async search(query) {
+      try {
+        const res = await fetch(
+          `https://play-back.api.arcktis.fr/api/events/search?event=${encodeURIComponent(query)}`
+        );
+        if (!res.ok) throw new Error();
+        this.events = await res.json();
+      } catch (err) {
+        console.error("Error searching events:", err);
+      }
     },
   },
 };

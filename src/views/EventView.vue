@@ -1,14 +1,15 @@
 <template>
   <div class="event-view">
-    <div class="event-card-wrapper">
+    <!-- état de chargement / erreur -->
+    <div v-if="loading"  class="loader">Chargement…</div>
+    <div v-else-if="error" class="error">{{ error }}</div>
+
+    <!-- contenu une fois les données prêtes -->
+    <div v-else class="event-card-wrapper">
       <div class="event-header">
         <div class="calendar-block">
           <div class="calendar">
-            <img
-              src="@/assets/calendrier.svg"
-              alt="Calendrier"
-              class="calendar-asset"
-            />
+            <img src="@/assets/calendrier.svg" alt="Calendrier" class="calendar-asset" />
             <div class="calendar-text">
               <div class="month">{{ month }}</div>
               <div class="day">{{ day }}</div>
@@ -22,11 +23,7 @@
             <h2 class="event-title">{{ event.title }}</h2>
             <div class="action-right">
               <div class="event-participants">
-                <img
-                  src="@/assets/utilisateur.svg"
-                  alt="Utilisateurs"
-                  class="user-icon"
-                />
+                <img src="@/assets/utilisateur.svg" alt="Utilisateurs" class="user-icon" />
                 <span>{{ event.participants.current }}/{{ event.participants.max }}</span>
               </div>
               <button class="register-btn">S’inscrire</button>
@@ -36,9 +33,7 @@
         </div>
       </div>
 
-      <p class="event-description">
-        {{ event.description }}
-      </p>
+      <p class="event-description">{{ event.description }}</p>
 
       <h3 class="games-title">Jeux proposés</h3>
       <div class="games-container">
@@ -59,62 +54,71 @@ import GameCard from "@/components/GameCard.vue";
 
 export default {
   name: "EventView",
-  components: {
-    GameCard,
-  },
+  components: { GameCard },
+
   data() {
     return {
-      event: {
-        title: "Session jeux de plateau",
-        date: "2024-06-27",
-        startTime: "18h",
-        endTime: "23h",
-        difficulty: "Débutants",
-        participants: {
-          current: 24,
-          max: 40,
-        },
-        description:
-          "Rejoins-nous pour une soirée conviviale autour des jeux de plateau ! Que tu sois stratège confirmé ou simple curieux, viens partager un bon moment, relever des défis, et découvrir de nouveaux jeux dans une ambiance détendue et chaleureuse.",
-      },
-      games: [
-        {
-          id: 1,
-          title: "Carcassonne",
-          image:
-            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
-        },
-        {
-          id: 2,
-          title: "Catan",
-          image:
-            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
-        },
-        {
-          id: 3,
-          title: "Dixit",
-          image:
-            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
-        },
-        {
-          id: 4,
-          title: "Monopoly",
-          image:
-            "https://cf.geekdo-images.com/okM0dq_bEXnbyQTOvHfwRA__original/img/aVZEXAI-cUtuunNfPhjeHlS4fwQ=/0x0/filters:format(png)/pic6544250.png",
-        },
-      ],
+      loading: true,
+      error  : null,
+      event  : null,   // objet formatté
+      games  : []      // liste des jeux formattés
     };
   },
-  computed: {
-    day() {
-      return new Date(this.event.date).getDate();
-    },
-    month() {
-      return new Date(this.event.date).toLocaleString("default", {
-        month: "long",
-      });
-    },
+
+  async created() {
+    const id = this.$route.params.id;            // /events/:id
+    const base = "https://play-back.api.arcktis.fr/api/events";
+
+    try {
+      // deux appels en parallèle
+      const [eventRes, gamesRes] = await Promise.all([
+        fetch(`${base}/get/${id}`),
+        fetch(`${base}/games/${id}`)
+      ]);
+
+      if (!eventRes.ok || !gamesRes.ok) throw new Error("Réponse réseau incorrecte");
+
+      const rawEvent  = await eventRes.json();
+      const rawGames  = await gamesRes.json();
+
+      /* ---------- formatage des données ---------- */
+      const start = new Date(rawEvent.date_heure);
+      const end   = new Date(start.getTime() + rawEvent.duree * 60_000);
+
+      this.event = {
+        id   : rawEvent.ID_evenement,
+        title: rawEvent.nom_session,
+        date : start.toISOString().slice(0, 10),
+        startTime: start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        endTime  : end  .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        difficulty: rawEvent.difficulte,
+        participants: {
+          current: rawEvent.nb_participants ?? 0,   // si tu ajoutes la colonne/alias
+          max    : rawEvent.nb_part_max
+        },
+        description: rawEvent.description
+      };
+
+      this.games = rawGames.map(g => ({
+        id    : g.ID_jeu,
+        title : g.nom_jeu   || g.titre,
+        image : g.image_url || g.image || ""
+      }));
+    }
+    catch (err) {
+      console.error(err);
+      this.error = "Impossible de charger cet évènement.";
+    }
+    finally {
+      this.loading = false;
+    }
   },
+
+  computed: {
+    day()   { return this.event ? new Date(this.event.date).getDate() : ""; },
+    month() { return this.event ? new Date(this.event.date)
+                             .toLocaleString("fr-FR", { month: "long" }) : ""; }
+  }
 };
 </script>
 
