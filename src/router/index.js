@@ -68,6 +68,12 @@ const routes = [
     name: "Admin",
     component: AdminView,
   },
+  {
+    path: '/events/:id',
+    name: 'EventView',
+    component: () => import('@/views/EventView.vue'),
+    props: true  
+  }
 ];
 
 const router = createRouter({
