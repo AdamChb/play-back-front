@@ -1,44 +1,37 @@
 <template>
-  <div class="event-card" :class="{ medium: medium, large: large }">
+  <!-- la carte entière est cliquable -->
+  <div class="event-card"
+       :class="sizeClass"
+       @click="emitCardClick">
+
+    <!-- ───── En-tête : calendrier, titre, participants ───── -->
     <div class="event-header">
       <div class="calendar-block">
-        <div class="calendar" :class="{ medium: medium, large: large }">
-          <img
-            src="@/assets/calendrier.svg"
-            alt="Calendrier"
-            class="calendar-asset"
-            :class="{ medium: medium, large: large }"
-          />
-          <div class="calendar-text" :class="{ medium: medium, large: large }">
-            <div class="month" :class="{ medium: medium, large: large }">
-              {{ month }}
-            </div>
-            <div class="day" :class="{ medium: medium, large: large }">{{ day }}</div>
+        <div class="calendar" :class="sizeClass">
+          <img src="@/assets/calendrier.svg" alt="Calendrier"
+               class="calendar-asset" />
+          <div class="calendar-text" :class="sizeClass">
+            <div class="month" :class="sizeClass">{{ month }}</div>
+            <div class="day"   :class="sizeClass">{{ day   }}</div>
           </div>
         </div>
-        <div class="time" :class="{ medium: medium, large: large }">
-          {{ time }}
-        </div>
+        <div class="time" :class="sizeClass">{{ time }}</div>
       </div>
+
       <div class="event-info">
-        <h2 class="event-title" :class="{ medium: medium, large: large }">
-          {{ title }}
-        </h2>
-        <div class="participants" :class="{ medium: medium, large: large }">
-          <img
-            src="@/assets/utilisateur.svg"
-            alt="Utilisateurs"
-            class="user-icon"
-            :class="{ medium: medium, large: large }"
-          />
+        <h2 class="event-title" :class="sizeClass">{{ title }}</h2>
+        <div class="participants" :class="sizeClass">
+          <img src="@/assets/utilisateur.svg" alt="Utilisateurs"
+               class="user-icon" :class="sizeClass" />
           <span>{{ nb_participants }}</span>
         </div>
       </div>
     </div>
-    <!-- <p class="games" :class="{ medium: medium, large: large }">
-      Jeux : Carcassone, Risk, Catan, Mysterium
-    </p> -->
-    <button class="register-btn" :class="{ medium: medium, large: large }" @click="handleRegisterClick(eventId)">
+
+    <!-- ───── Bouton inscription ───── -->
+    <button class="register-btn"
+            :class="sizeClass"
+            @click.stop.prevent="handleRegisterClick">
       S’inscrire
     </button>
   </div>
@@ -47,309 +40,110 @@
 <script>
 export default {
   name: "EventCard",
+  emits: ["card-click"],               // ⚑ événement remonté vers le parent
+
   props: {
-    eventId: {
-      type: Number,
-      required: true,
-    },
-    size: {
-      type: String,
-      default: "medium",
-    },
-    date: {
-      type: String,
-      default: "2024-05-27 18:00:00",
-    },
-    duration: {
-      type: Number,
-      default: 60,
-    },
-    title: {
-      type: String,
-      default: "Session jeux de plateau",
-    },
-    nb_participants: {
-      type: Number,
-      default: 40,
-    },
-    games: {
-      type: Array,
-      default: () => ["Carcassone", "Risk", "Catan", "Mysterium"],
-    },
+    eventId: { type: Number, required: true },
+
+    /* options d’affichage */
+    size:     { type: String, default: "medium" },  // "medium" | "large"
+    date:     { type: String, default: "2024-05-27 18:00:00" },
+    duration: { type: Number, default: 60 },
+
+    /* données affichées */
+    title:           { type: String, default: "Session jeux de plateau" },
+    nb_participants: { type: Number, default: 40 },
   },
-  data() {
-    return {
-      medium: false,
-      large: false,
-    };
-  },
+
   computed: {
+    /* classe utilitaire */
+    sizeClass() { return { medium: this.size === "medium", large: this.size === "large" }; },
+
+    /* calendrier */
     month() {
-      const months = [
-        "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
-      ];
-      const dateObj = new Date(this.date);
-      return months[dateObj.getMonth()];
+      const m = ["Janvier","Février","Mars","Avril","Mai","Juin",
+                 "Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+      return m[new Date(this.date).getMonth()];
     },
-    day() {
-      const dateObj = new Date(this.date);
-      return dateObj.getDate();
-    },
+    day() { return new Date(this.date).getDate(); },
+
     time() {
-      const dateObj = new Date(this.date);
       const pad = (n) => n.toString().padStart(2, "0");
-      const startH = pad(dateObj.getHours());
-      const startM = pad(dateObj.getMinutes());
-      // Calcul de l'heure de fin
-      const endDate = new Date(dateObj.getTime() + (parseInt(this.duration) * 60000));
-      const endH = pad(endDate.getHours());
-      const endM = pad(endDate.getMinutes());
-      return `${startH}H${startM} - ${endH}H${endM}`;
-    }
+      const start = new Date(this.date);
+      const end   = new Date(start.getTime() + this.duration * 60_000);
+      return `${pad(start.getHours())}H${pad(start.getMinutes())} - `
+           + `${pad(end.getHours())}H${pad(end.getMinutes())}`;
+    },
   },
+
   methods: {
-  handleRegisterClick(eventId) {
-    console.log("Inscription à l'événement ID:", eventId);
-    const isConnected = !!localStorage.getItem("token");
-    if (!isConnected) {
-      alert("Vous devez être connecté pour vous inscrire à un événement !");
-      return;
-    }
-    fetch(`https://play-back.api.arcktis.fr/api/events/enroll/${eventId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          alert(response.message || "Inscription réussie !");
-        } else {
-          alert("Erreur lors de l'inscription. Veuillez réessayer plus tard.");
-        }
-      })
-      .catch((error) => {
-        console.error("Erreur lors de l'inscription :", error);
-        alert("Une erreur est survenue. Veuillez réessayer plus tard.");
-      });
-  },
-},
-  beforeMount() {
-    if (this.size === "medium") {
-      this.medium = true;
-    } else if (this.size === "large") {
-      this.large = true;
-    }
+    /* remonte l’id au parent */
+    emitCardClick() { this.$emit("card-click", this.eventId); },
+
+    /* inscription */
+    async handleRegisterClick() {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Vous devez être connecté pour vous inscrire !");
+        return;
+      }
+      try {
+        const res = await fetch(
+          `https://play-back.api.arcktis.fr/api/events/enroll/${this.eventId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!res.ok) throw new Error(await res.text());
+        const data = await res.json();
+        alert(data.message || "Inscription réussie !");
+      } catch (err) {
+        console.error(err);
+        alert("Erreur lors de l’inscription, réessayez plus tard.");
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
-.event-card {
-  background-color: white;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+/* Dimensions de la carte */
+.event-card           { background:#fff; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,.1); font-family:Arial, sans-serif; display:flex; flex-direction:column; gap:10px; cursor:pointer; }
+.event-card.medium    { width:20%;  min-width:200px; padding:15px; }
+.event-card.large     { width:41%;  min-width:250px; padding:25px; }
 
-.event-card.medium {
-  width: 20%;
-  min-width: 200px;
-  padding: 15px;
-}
+/* En-tête */
+.event-header { display:flex; gap:15px; }
+.calendar-block.medium { width:40px; }   .calendar-block.large { width:70px; }
+.calendar.medium { width:40px; height:40px; } .calendar.large { width:70px; height:70px; }
 
-.event-card.large {
-  width: 41%;
-  min-width: 250px;
-  padding: 25px;
-}
+.calendar           { position:relative; display:flex; align-items:center; justify-content:center; }
+.calendar-asset     { width:100%; height:100%; object-fit:contain; }
+.calendar-text      { position:absolute; text-align:center; color:#3f424d; font-weight:bold; }
+.calendar-text.medium .month { font-size:8px;  } .calendar-text.large .month { font-size:12px; }
+.calendar-text.medium .day   { font-size:18px; margin-top:3px; }
+.calendar-text.large  .day   { font-size:35px; margin-top:5px; }
 
-.event-header {
-  display: flex;
-  gap: 15px;
-}
+.time.medium { font-size:8px;  color:#3f424d; text-align:center; }
+.time.large  { font-size:12px; color:#3f424d; text-align:center; }
 
-.calendar-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
+.event-info          { display:flex; flex-direction:column; margin-top:5px; gap:2px; }
+.event-title.medium  { font-size:18px; margin:0; }
+.event-title.large   { font-size:30px; margin:0; font-weight:bold; }
 
-.calendar-block.medium {
-  width: 40px;
-}
+.participants        { display:flex; align-items:center; gap:5px; }
+.participants.medium { font-size:14px; }   .participants.large { font-size:20px; }
+.user-icon.medium    { width:16px; height:16px; } .user-icon.large { width:20px; height:20px; }
 
-.calendar-block.large {
-  width: 70px;
-}
-
-.calendar {
-  position: relative;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  object-fit: contain;
-}
-
-.calendar.medium {
-  width: 40px;
-  height: 40px;
-}
-
-.calendar.large {
-  width: 70px;
-  height: 70px;
-}
-
-.calendar-asset {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.calendar-text {
-  position: absolute;
-  text-align: center;
-  color: #3f424d;
-  font-weight: bold;
-}
-
-.calendar-text.medium {
-  top: 3px;
-  left: 0;
-  right: 0;
-}
-
-.calendar-text.large {
-  top: 5px;
-  left: 0;
-  right: 0;
-}
-
-.calendar-text .month.medium {
-  font-size: 8px;
-}
-
-.calendar-text .month.large {
-  font-size: 12px;
-}
-
-.calendar-text .day.medium {
-  margin-top: 3px;
-  font-size: 18px;
-}
-
-.calendar-text .day.large {
-  margin-top: 5px;
-  font-size: 35px;
-}
-
-.time.medium {
-  font-size: 8px;
-  color: #3f424d;
-  text-align: center;
-}
-
-.time.large {
-  font-size: 12px;
-  color: #3f424d;
-  text-align: center;
-}
-
-.event-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  margin-top: 5px;
-  gap: 2px;
-}
-
-.event-title {
-  font-weight: bold;
-}
-
-.event-title.medium {
-  margin: 0;
-  font-size: 18px;
-}
-
-.event-title.large {
-  margin: 0;
-  font-size: 30px;
-  font-weight: bold;
-}
-
-.participants {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.participants.medium {
-  gap: 5px;
-  font-size: 14px;
-}
-
-.participants.large {
-  font-size: 20px;
-}
-
-.user-icon.medium {
-  width: 16px;
-  height: 16px;
-}
-
-.user-icon.large {
-  width: 20px;
-  height: 20px;
-}
-
-.games.medium {
-  margin-top: 8px;
-  margin-bottom: 8px;
-  font-size: 15px;
-}
-
-.games.large {
-  margin-top: 20px;
-  margin-bottom: 8px;
-  font-size: 20px;
-}
-
-.register-btn {
-  align-self: flex-start;
-  border: 2px solid #3f424d;
-  padding: 0.5em 1em;
-  text-align: center;
-  border-radius: 0.4em;
-  color: #3f424d;
-  backdrop-filter: blur(3px);
-  background-color: rgba(255, 255, 255, 0.3);
-  transition: 0.3s;
-  animation: fadeInLeft ease 1.5s;
-}
-
-.register-btn.medium {
-  width: 20%;
-  min-width: 100px;
-  font-size: 14px;
-}
-
-.register-btn.large {
-  width: 30%;
-  min-width: 150px;
-  font-size: 20px;
-}
-
-.register-btn:hover {
-  transform: scale(1.04);
-  transition: 0.3s;
-}
+/* Bouton */
+.register-btn        { align-self:flex-start; border:2px solid #3f424d; border-radius:0.4em;
+                       background:rgba(255,255,255,.3); backdrop-filter:blur(3px);
+                       padding:.5em 1em; color:#3f424d; transition:.3s; }
+.register-btn.medium { width:20%; min-width:100px; font-size:14px; }
+.register-btn.large  { width:30%; min-width:150px; font-size:20px; }
+.register-btn:hover  { transform:scale(1.04); }
 </style>

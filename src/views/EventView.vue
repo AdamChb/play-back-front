@@ -72,7 +72,7 @@ export default {
     try {
       // deux appels en parallèle
       const [eventRes, gamesRes] = await Promise.all([
-        fetch(`${base}/${id}`),
+        fetch(`${base}/get/${id}`),
         fetch(`${base}/games/${id}`)
       ]);
 
