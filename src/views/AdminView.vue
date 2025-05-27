@@ -182,6 +182,14 @@ export default {
               throw new Error("Failed to delete user");
             }
             this.users = this.users.filter((user) => user.id !== userId);
+            if (this.actualUser.id === userId) {
+              this.actualUser = {
+                id: null,
+                name: "",
+                email: "",
+                role: "Client",
+              };
+            }
           })
           .catch((error) => console.error("Error:", error));
       }
@@ -218,8 +226,9 @@ export default {
             return response.json();
           })
           .then((data) => {
+            console.log("User created:", data);
             this.users.push({
-              id: data.id,
+              id: data.user.userId,
               name: this.actualUser.name,
               email: this.actualUser.email,
               role: ["Administrateur", "Employé", "Client"][role],
@@ -228,21 +237,19 @@ export default {
           })
           .catch((error) => console.error("Error:", error));
       } else {
-        fetch(
-          `https://play-back.api.arcktis.fr/api/auth/update/${this.actualUser.id}`,
-          {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              pseudo: this.actualUser.name,
-              email: this.actualUser.email,
-              role: role,
-            }),
-          }
-        )
+        fetch(`https://play-back.api.arcktis.fr/api/auth/update`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: this.actualUser.id,
+            pseudo: this.actualUser.name,
+            email: this.actualUser.email,
+            role: role,
+          }),
+        })
           .then((response) => {
             if (!response.ok) {
               throw new Error("Failed to update user");
@@ -258,7 +265,7 @@ export default {
                 id: this.actualUser.id,
                 name: this.actualUser.name,
                 email: this.actualUser.email,
-                role: role,
+                role: ["Administrateur", "Employé", "Client"][role],
               };
             }
             this.actualUser = { id: null, name: "", email: "", role: "Client" };
