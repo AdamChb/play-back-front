@@ -38,7 +38,12 @@
                   }}</span
                 >
               </div>
-              <button class="register-btn">S’inscrire</button>
+              <button
+                class="register-btn"
+                @click="toggleEnroll"
+              >
+                {{ enrolled ? "Se désinscrire" : "S’inscrire" }}
+              </button>
             </div>
           </div>
           <p class="event-meta">Difficulté : {{ event.difficulty }}</p>
@@ -70,77 +75,112 @@ export default {
 
   data() {
     return {
-      loading: true,
-      error: null,
-      event: null, // objet formatté
-      games: [], // liste des jeux formattés
+      loading   : true,
+      error     : null,
+      event     : null,   // objet formaté
+      games     : [],
+      enrolled  : false   // l’utilisateur est-il inscrit ?
     };
   },
 
+  /* ──────────────── CHARGEMENT INITIAL ──────────────── */
   async created() {
-    const id = this.$route.params.id; // /events/:id
+    const id   = this.$route.params.id;
     const base = "https://play-back.api.arcktis.fr/api/events";
 
     try {
-      // deux appels en parallèle
-      const [eventRes, gamesRes] = await Promise.all([
+      /* 1. détail + jeux en parallèle */
+      const [evRes, gamesRes] = await Promise.all([
         fetch(`${base}/get/${id}`),
         fetch(`${base}/games/${id}`),
       ]);
+      if (!evRes.ok || !gamesRes.ok) throw new Error();
+      const rawEv   = await evRes.json();
+      const rawGame = await gamesRes.json();
 
-      if (!eventRes.ok || !gamesRes.ok)
-        throw new Error("Réponse réseau incorrecte");
-
-      const rawEvent = await eventRes.json();
-      const rawGames = await gamesRes.json();
-
-      /* ---------- formatage des données ---------- */
-      const start = new Date(rawEvent.date_heure);
-      const end = new Date(start.getTime() + rawEvent.duree * 60_000);
+      /* format */
+      const start = new Date(rawEv.date_heure);
+      const end   = new Date(start.getTime() + rawEv.duree * 60_000);
 
       this.event = {
-        id: rawEvent.ID_evenement,
-        title: rawEvent.nom_session,
-        date: start.toISOString().slice(0, 10),
-        startTime: start.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        endTime: end.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        difficulty: rawEvent.difficulte,
-        participants: {
-          current: rawEvent.nb_participants ?? 0, // si tu ajoutes la colonne/alias
-          max: rawEvent.nb_part_max,
-        },
-        description: rawEvent.description,
+        id   : rawEv.ID_evenement,
+        title: rawEv.nom_session,
+        dateISO: start.toISOString().slice(0, 10),
+        startTime: start.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" }),
+        endTime  : end  .toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" }),
+        difficulty: rawEv.difficulte,
+        participants: { current: 0, max: rawEv.nb_part_max },
+        description : rawEv.description
       };
 
-      this.games = rawGames.map((g) => ({
-        id: g.ID_jeu,
-        title: g.nom || g.titre,
-        image: g.image_url || g.image || "",
+      this.games = rawGame.map(g => ({
+        id:g.ID_jeu, title:g.nom_jeu||g.titre,
+        image:g.image_url||g.image||""
       }));
-    } catch (err) {
-      console.error(err);
-      this.error = "Impossible de charger cet évènement.";
-    } finally {
-      this.loading = false;
+
+      /* 2. compteur de participants + état d’inscription */
+      await Promise.all([ this.refreshCount(), this.refreshEnrollment() ]);
+    }
+    catch(e){ this.error="Impossible de charger cet évènement."; console.error(e); }
+    finally { this.loading = false; }
+  },
+
+  /* ──────────────── MÉTHODES ──────────────── */
+  methods:{
+    /* récupère le compteur depuis /count/:id */
+    async refreshCount(){
+      const res = await fetch(`https://play-back.api.arcktis.fr/api/events/count/${this.event.id}`);
+      if(res.ok){
+        const { count } = await res.json();
+        this.event.participants.current = count;
+      }
+    },
+
+    /* récupère l’état d’inscription (optionnel : nécessite le token) */
+    async refreshEnrollment(){
+      const token = localStorage.getItem("token");
+      if(!token) return;
+      const res = await fetch(`https://play-back.api.arcktis.fr/api/events/attendance`,{
+        method:"POST",
+        headers:{ "Content-Type":"application/json", "Authorization":`Bearer ${token}` },
+        body:JSON.stringify({ eventId:this.event.id, userId:0 })
+      });
+      if(res.ok){
+        const { enrolled } = await res.json();
+        this.enrolled = enrolled;
+      }
+    },
+
+    /* inscription / désinscription puis rafraîchissement du compteur */
+    async toggleEnroll(){
+      const token = localStorage.getItem("token");
+      if(!token){ alert("Connecte-toi pour t’inscrire !"); return; }
+
+      try{
+        const res = await fetch(
+          `https://play-back.api.arcktis.fr/api/events/enroll/${this.event.id}`,
+          { method:"POST",
+            headers:{ "Content-Type":"application/json",
+                      "Authorization":`Bearer ${token}` } }
+        );
+        if(!res.ok) throw new Error();
+        const data = await res.json();
+        this.enrolled = data.enrolled;      // met à jour le label bouton
+        await this.refreshCount();          // lit le compteur réel
+      }catch(e){
+        alert("Erreur lors de l’inscription, réessaie plus tard.");
+        console.error(e);
+      }
     }
   },
 
-  computed: {
-    day() {
-      return this.event ? new Date(this.event.date).getDate() : "";
-    },
-    month() {
-      return this.event
-        ? new Date(this.event.date).toLocaleString("fr-FR", { month: "long" })
-        : "";
-    },
-  },
+  /* ──────────────── COMPUTED ──────────────── */
+  computed:{
+    day()   { return this.event ? new Date(this.event.dateISO).getDate() : ""; },
+    month() { return this.event
+                   ? new Date(this.event.dateISO).toLocaleString("fr-FR",{ month:"long" })
+                   : ""; }
+  }
 };
 </script>
 
