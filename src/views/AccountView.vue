@@ -29,7 +29,11 @@
         <div class="card-row" ref="eventsRow">
           <EventCard
             v-for="event in upcomingEvents"
-            :key="event.id"
+            :eventId="event.ID_evenement"
+            :title="event.nom_session"
+            :date="event.date_heure"
+            :nb_participants="event.nb_part_max"
+            :duration="event.duree"
             class="event-card"
           />
         </div>
@@ -52,7 +56,11 @@
         <div class="card-row" ref="oldEventsRow">
           <EventCard
             v-for="event in pastEvents"
-            :key="event.id"
+            :eventId="event.ID_evenement"
+            :title="event.nom_session"
+            :date="event.date_heure"
+            :nb_participants="event.nb_part_max"
+            :duration="event.duree"
             class="event-card"
           />
         </div>
@@ -76,8 +84,9 @@
         <div class="card-row" ref="favoritesRow">
           <GameCard
             v-for="game in favoriteGames"
-            :key="game.id"
-            :title="game.title"
+            :key="game.ID_jeu"
+            :title="game.nom"
+            :image="game.image"
             class="game-card"
           />
         </div>
@@ -101,8 +110,9 @@
         <div class="card-row" ref="toTestRow">
           <GameCard
             v-for="game in gamesToTest"
-            :key="game.id"
-            :title="game.title"
+            :key="game.ID_jeu"
+            :title="game.nom"
+            :image="game.image"
             class="game-card"
           />
         </div>
@@ -126,8 +136,9 @@
         <div class="card-row" ref="testedRow">
           <GameCard
             v-for="game in testedGames"
-            :key="game.id"
-            :title="game.title"
+            :key="game.ID_jeu"
+            :title="game.nom"
+            :image="game.image"
             class="game-card"
           />
         </div>
@@ -151,23 +162,57 @@ export default {
   },
   data() {
     return {
-      upcomingEvents: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }],
-      pastEvents: [{ id: 5 }, { id: 6 }, { id: 7 }],
-      favoriteGames: [
-        { id: 1, title: "Catan" },
-        { id: 2, title: "7 Wonders" },
-        { id: 3, title: "Azul" },
-      ],
-      gamesToTest: [
-        { id: 4, title: "Splendor" },
-        { id: 5, title: "Takenoko" },
-      ],
-      testedGames: [
-        { id: 6, title: "Monopoly" },
-        { id: 7, title: "Dixit" },
-        { id: 8, title: "Carcassonne" },
-      ],
+      upcomingEvents: [],
+      pastEvents: [],
+      favoriteGames: [],
+      gamesToTest: [],
+      testedGames: [],
     };
+  },
+  async created() {
+    try {
+      const res_user_next = await fetch("https://play-back.api.arcktis.fr/api/events/user/next", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        } 
+      });
+
+      const data_user_next = await res_user_next.json();
+      this.upcomingEvents = data_user_next;
+      console.log("Upcoming Events:", this.upcomingEvents);
+
+      const res_user_past = await fetch("https://play-back.api.arcktis.fr/api/events/user/old", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+      });
+
+      const data_user_past = await res_user_past.json();
+      this.pastEvents = data_user_past;
+
+      const res_user_games = await fetch("https://play-back.api.arcktis.fr/api/games/user", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+      })
+
+      const data_user_games = await res_user_games.json();
+      data_user_games.forEach(game => {
+        switch (game.statut) {
+          case "aimé":
+            this.favoriteGames.push(game);
+            break;
+          case "à tester":
+            this.gamesToTest.push(game);
+            break;
+          case "essayé":
+            this.testedGames.push(game);
+            break;
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching upcoming events:", error);
+    }
   },
   methods: {
     scrollRight(refName) {

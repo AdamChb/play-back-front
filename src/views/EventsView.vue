@@ -10,7 +10,7 @@
       <div class="card-container">
         <EventCard
           v-for="event in events"
-          :key="event.id"
+          :eventId="event.ID_evenement"
           :date="event.date"
           :title="event.title"
           :time="event.time"
@@ -34,27 +34,22 @@ export default {
   },
   data() {
     return {
-      events: [
-        {
-          id: 1,
-          date: "27",
-          month: "June",
-          title: "Session jeux de plateau",
-          time: "19h - 23h",
-          players: 40,
-          games: ["Carcassone", "Risk", "Catan", "Mysterium"],
-        },
-        {
-          id: 2,
-          date: "28",
-          month: "June",
-          title: "Tournoi",
-          time: "19h - 23h",
-          players: 12,
-          games: ["Dixit", "Monopoly"],
-        },
-      ],
+      events: [],
     };
+  },
+  async created() {
+    try {
+      const response = await fetch(
+        "https://play-back.api.arcktis.fr/api/events/next"
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      this.events = data; // Update events with fetched data
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
   },
   methods: {
     search(query) {
