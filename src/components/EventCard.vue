@@ -11,18 +11,18 @@
           />
           <div class="calendar-text" :class="{ medium: medium, large: large }">
             <div class="month" :class="{ medium: medium, large: large }">
-              June
+              {{ month }}
             </div>
-            <div class="day" :class="{ medium: medium, large: large }">27</div>
+            <div class="day" :class="{ medium: medium, large: large }">{{ day }}</div>
           </div>
         </div>
         <div class="time" :class="{ medium: medium, large: large }">
-          18h - 23h
+          {{ time }}
         </div>
       </div>
       <div class="event-info">
         <h2 class="event-title" :class="{ medium: medium, large: large }">
-          Session jeux de plateau
+          {{ title }}
         </h2>
         <div class="participants" :class="{ medium: medium, large: large }">
           <img
@@ -31,14 +31,14 @@
             class="user-icon"
             :class="{ medium: medium, large: large }"
           />
-          <span>40</span>
+          <span>{{ nb_participants }}</span>
         </div>
       </div>
     </div>
     <p class="games" :class="{ medium: medium, large: large }">
       Jeux : Carcassone, Risk, Catan, Mysterium
     </p>
-    <button class="register-btn" :class="{ medium: medium, large: large }" @click="handleRegisterClick">
+    <button class="register-btn" :class="{ medium: medium, large: large }" @click="handleRegisterClick(eventId)">
       S’inscrire
     </button>
   </div>
@@ -48,29 +48,92 @@
 export default {
   name: "EventCard",
   props: {
+    eventId: {
+      type: Number,
+      required: true,
+    },
     size: {
       type: String,
       default: "medium",
     },
+    date: {
+      type: String,
+      default: "2024-05-27 18:00:00",
+    },
+    duration: {
+      type: Number,
+      default: 60,
+    },
+    title: {
+      type: String,
+      default: "Session jeux de plateau",
+    },
+    nb_participants: {
+      type: Number,
+      default: 40,
+    },
+    games: {
+      type: Array,
+      default: () => ["Carcassone", "Risk", "Catan", "Mysterium"],
+    },
   },
   data() {
     return {
-      date: "27",
-      title: "Session jeux de plateau",
-      time: "19h - 23h",
-      players: 40,
-      games: ["Carcassone", "Risk", "Catan", "Mysterium"],
       medium: false,
       large: false,
     };
   },
+  computed: {
+    month() {
+      const months = [
+        "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+      ];
+      const dateObj = new Date(this.date);
+      return months[dateObj.getMonth()];
+    },
+    day() {
+      const dateObj = new Date(this.date);
+      return dateObj.getDate();
+    },
+    time() {
+      const dateObj = new Date(this.date);
+      const pad = (n) => n.toString().padStart(2, "0");
+      const startH = pad(dateObj.getHours());
+      const startM = pad(dateObj.getMinutes());
+      // Calcul de l'heure de fin
+      const endDate = new Date(dateObj.getTime() + (parseInt(this.duration) * 60000));
+      const endH = pad(endDate.getHours());
+      const endM = pad(endDate.getMinutes());
+      return `${startH}H${startM} - ${endH}H${endM}`;
+    }
+  },
   methods: {
-  handleRegisterClick() {
+  handleRegisterClick(eventId) {
+    console.log("Inscription à l'événement ID:", eventId);
     const isConnected = !!localStorage.getItem("token");
     if (!isConnected) {
       alert("Vous devez être connecté pour vous inscrire à un événement !");
       return;
     }
+    fetch(`http://localhost:3000/api/events/enroll/${eventId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          alert(response.message || "Inscription réussie !");
+        } else {
+          alert("Erreur lors de l'inscription. Veuillez réessayer plus tard.");
+        }
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'inscription :", error);
+        alert("Une erreur est survenue. Veuillez réessayer plus tard.");
+      });
   },
 },
   beforeMount() {
