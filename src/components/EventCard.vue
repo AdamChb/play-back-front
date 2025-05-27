@@ -35,9 +35,9 @@
         </div>
       </div>
     </div>
-    <p class="games" :class="{ medium: medium, large: large }">
+    <!-- <p class="games" :class="{ medium: medium, large: large }">
       Jeux : Carcassone, Risk, Catan, Mysterium
-    </p>
+    </p> -->
     <button class="register-btn" :class="{ medium: medium, large: large }" @click="handleRegisterClick(eventId)">
       S’inscrire
     </button>

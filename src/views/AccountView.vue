@@ -10,8 +10,8 @@
         <input type="text" placeholder="CurrentUsername" />
         <input type="password" placeholder="********" />
         <div class="account-actions">
-          <button class="btn">Changer nom d'utilisateur</button>
-          <button class="btn">Changer mot de passe</button>
+          <!-- <button class="btn">Changer nom d'utilisateur</button>
+          <button class="btn">Changer mot de passe</button> -->
           <button class="btn logout-btn" @click="logout">Se déconnecter</button>
         </div>
       </div>
