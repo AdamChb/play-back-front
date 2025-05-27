@@ -116,7 +116,7 @@ export default {
       alert("Vous devez être connecté pour vous inscrire à un événement !");
       return;
     }
-    fetch(`http://localhost:3000/api/events/enroll/${eventId}`, {
+    fetch(`https://play-back.api.arcktis.fr/api/events/enroll/${eventId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
