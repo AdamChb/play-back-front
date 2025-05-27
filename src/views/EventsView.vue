@@ -11,11 +11,10 @@
         <EventCard
           v-for="event in events"
           :eventId="event.ID_evenement"
-          :date="event.date"
-          :title="event.title"
-          :time="event.time"
-          :players="event.players"
-          :games="event.games"
+            :title="event.nom_session"
+            :date="event.date_heure"
+            :nb_participants="event.nb_part_max"
+            :duration="event.duree"
         />
       </div>
     </div>
