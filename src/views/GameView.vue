@@ -99,7 +99,6 @@ export default {
           return response.json();
         })
         .then((data) => {
-          console.log("Statut mis à jour avec succès :", data);
           if (status === "aimé") {
             this.aime = true;
           }
@@ -150,7 +149,6 @@ export default {
         );
         if (response.ok) {
           const statutData = await response.json();
-          console.log("Statut utilisateur:", statutData);
           if (!Array.isArray(statutData)) {
             if (statutData.statut === "aimé") {
               this.aime = true;

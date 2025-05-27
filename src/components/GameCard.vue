@@ -24,10 +24,9 @@ export default {
   },
   methods: {
     updateStatus(status) {
-      if (
-        !localStorage.getItem("token") ||
-        localStorage.getItem("tokenExpiration") <= Date.now()
-      ) {
+      const token = localStorage.getItem("token");
+      const tokenExpiration = localStorage.getItem("tokenExpiration");
+      if (!token || tokenExpiration < Date.now()) {
         alert("Vous devez être connecté pour aimer un jeu !");
         return;
       }
@@ -35,10 +34,10 @@ export default {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          id_game: this.id,
+          id_game: this.game.id,
           status: status,
         }),
       })
@@ -49,7 +48,6 @@ export default {
           return response.json();
         })
         .then((data) => {
-          console.log("Statut mis à jour avec succès :", data);
           if (status === "aimé") {
             this.aime = true;
           }
@@ -61,6 +59,50 @@ export default {
           console.error("Erreur lors de la mise à jour du statut :", error);
         });
     },
+  },
+  async created() {
+    try {
+      const token = localStorage.getItem("token");
+      const tokenExpiration = localStorage.getItem("tokenExpiration");
+
+      // Vérification du statut de l'utilisateur
+      if (token && tokenExpiration > Date.now()) {
+        const response = await fetch(
+          "https://play-back.api.arcktis.fr/api/games/user/" + this.id,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.ok) {
+          const statutData = await response.json();
+          if (!Array.isArray(statutData)) {
+            if (statutData.statut === "aimé") {
+              this.aime = true;
+            }
+            if (statutData.statut === "à tester") {
+              this.a_tester = true;
+            }
+          } else {
+            for (const statut of statutData) {
+              if (statut.statut === "aimé") {
+                this.aime = true;
+              }
+              if (statut.statut === "à tester") {
+                this.a_tester = true;
+              }
+            }
+          }
+        } else {
+          console.error("Erreur lors de la récupération du statut utilisateur");
+        }
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement du jeu:", error);
+    }
   },
 };
 </script>
