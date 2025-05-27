@@ -45,7 +45,7 @@
             </tbody>
           </table>
         </div>
-        <div class="info-user">
+        <div id="section-add" class="info-user">
           <h2 class="name">Nom d'utilisateur</h2>
           <input
             v-if="actualUser.id"
@@ -153,6 +153,9 @@ export default {
     },
     addUser() {
       // Logic to add a new user
+      document.getElementById("section-add").scrollIntoView({
+        behavior: "smooth",
+      });
       this.actualUser = {
         id: -1,
         name: "",
