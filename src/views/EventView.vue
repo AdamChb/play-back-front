@@ -1,7 +1,7 @@
 <template>
   <div class="event-view">
     <!-- état de chargement / erreur -->
-    <div v-if="loading"  class="loader">Chargement…</div>
+    <div v-if="loading" class="loader">Chargement…</div>
     <div v-else-if="error" class="error">{{ error }}</div>
 
     <!-- contenu une fois les données prêtes -->
@@ -9,7 +9,11 @@
       <div class="event-header">
         <div class="calendar-block">
           <div class="calendar">
-            <img src="@/assets/calendrier.svg" alt="Calendrier" class="calendar-asset" />
+            <img
+              src="@/assets/calendrier.svg"
+              alt="Calendrier"
+              class="calendar-asset"
+            />
             <div class="calendar-text">
               <div class="month">{{ month }}</div>
               <div class="day">{{ day }}</div>
@@ -23,8 +27,16 @@
             <h2 class="event-title">{{ event.title }}</h2>
             <div class="action-right">
               <div class="event-participants">
-                <img src="@/assets/utilisateur.svg" alt="Utilisateurs" class="user-icon" />
-                <span>{{ event.participants.current }}/{{ event.participants.max }}</span>
+                <img
+                  src="@/assets/utilisateur.svg"
+                  alt="Utilisateurs"
+                  class="user-icon"
+                />
+                <span
+                  >{{ event.participants.current }}/{{
+                    event.participants.max
+                  }}</span
+                >
               </div>
               <button
                 class="register-btn"
@@ -80,7 +92,7 @@ export default {
       /* 1. détail + jeux en parallèle */
       const [evRes, gamesRes] = await Promise.all([
         fetch(`${base}/get/${id}`),
-        fetch(`${base}/games/${id}`)
+        fetch(`${base}/games/${id}`),
       ]);
       if (!evRes.ok || !gamesRes.ok) throw new Error();
       const rawEv   = await evRes.json();

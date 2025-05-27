@@ -12,7 +12,7 @@
         <EventCard
           v-for="event in events"
           :key="event.id"
-          :id="event.id"
+          :eventId="event.id"
           :date="event.date"
           :title="event.title"
           :time="event.time"
@@ -33,27 +33,36 @@ export default {
   data() {
     return {
       size: "large",
-      events: [
-        {
-          id: 1,
-          date: "27",
-          month: "June",
-          title: "Session jeux de plateau",
-          time: "19h - 23h",
-          players: 40,
-          games: ["Carcassone", "Risk", "Catan", "Mysterium"],
-        },
-        {
-          id: 2,
-          date: "28",
-          month: "June",
-          title: "Tournoi",
-          time: "19h - 23h",
-          players: 12,
-          games: ["Dixit", "Monopoly"],
-        },
-      ],
+      events: [],
     };
+  },
+  async created() {
+    fetch("https://play-back.api.arcktis.fr/api/events/next")
+      .then((response) => response.json())
+      .then((data) => {
+        data.slice(0, 2).forEach((event) => {
+          event.jeux = fetch(
+            `https://play-back.api.arcktis.fr/api/events/games/${event.ID_evenement}`
+          )
+            .then((res) => res.json())
+            .then((games) =>
+              games.map((game) => ({
+                id: Number(game.ID_jeu),
+                title: game.nom,
+                image: game.image,
+              }))
+            );
+          this.events.push({
+            id: event.ID_evenement,
+            title: event.nom_session,
+            date: event.date_heure.split("T")[0],
+            time: event.date_heure.split("T")[1].slice(0, 5),
+            players: event.nb_part_max,
+            games: event.jeux,
+          });
+        });
+      })
+      .catch((error) => console.error("Error fetching events:", error));
   },
 };
 </script>
